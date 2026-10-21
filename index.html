@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonic Cosmic Cylinder - 4D Spacetime Trumpet Inspector</title>
+    <style>
+        :root {
+            --bg-dark: #030408;
+            --panel-bg: rgba(9, 14, 28, 0.85);
+            --panel-border: rgba(64, 160, 255, 0.3);
+            --accent-gold: #ffcd32;
+            --accent-cyan: #50d0ff;
+            --accent-amber: #ffa726;
+            --accent-purple: #c084fc;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+
+        /* Loading Screen Overlay */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, #0a1128 0%, #030408 85%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(80, 208, 255, 0.15);
+            border-top: 3px solid var(--accent-gold);
+            border-right: 3px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1.1s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+            margin-bottom: 22px;
+            box-shadow: 0 0 25px rgba(255, 205, 50, 0.2);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-title {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+        }
+
+        .loading-status {
+            font-size: 12px;
+            color: var(--accent-cyan);
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+
+        .progress-track {
+            width: 240px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-gold));
+            transition: width 0.3s ease;
+        }
+
+        /* Fallback Overlay (When CORS or Network Fails) */
+        #cors-fallback {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(3, 4, 8, 0.92);
+            backdrop-filter: blur(12px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .fallback-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--accent-gold);
+            border-radius: 14px;
+            padding: 28px 36px;
+            max-width: 540px;
+            text-align: center;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8);
+        }
+
+        .fallback-box h2 {
+            font-size: 18px;
+            color: var(--accent-gold);
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .fallback-box p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 20px;
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(80, 208, 255, 0.5);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--accent-gold);
+            background: rgba(255, 205, 50, 0.1);
+        }
+
+        .btn-browse {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(80, 208, 255, 0.3), rgba(30, 64, 175, 0.6));
+            border: 1px solid var(--accent-cyan);
+            border-radius: 6px;
+            padding: 10px 20px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-browse:hover {
+            box-shadow: 0 0 15px rgba(80, 208, 255, 0.5);
+        }
+
+        /* Top Left Spacetime Panel */
+        #hud-main {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 18px 22px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.65);
+            width: 360px;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            font-size: 15px;
+            margin: 0 0 4px 0;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .subtitle {
+            font-size: 11px;
+            color: var(--accent-cyan);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11.5px;
+            margin-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            padding-bottom: 4px;
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+        }
+
+        .metric-val {
+            font-weight: 600;
+            color: #ffffff;
+            text-align: right;
+        }
+
+        /* Object Selector Dropdown inside HUD */
+        .selector-box {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(64, 160, 255, 0.25);
+        }
+
+        .selector-label {
+            font-size: 11px;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            display: block;
+            font-weight: 700;
+        }
+
+        #object-select {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            color: #ffffff;
+            border: 1px solid rgba(64, 160, 255, 0.4);
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        #object-select:hover, #object-select:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        /* Quick-jump chips */
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .chip-btn {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 10px;
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chip-btn:hover {
+            background: rgba(64, 160, 255, 0.3);
+            border-color: var(--accent-cyan);
+            color: #ffffff;
+        }
+
+        .chip-btn.active {
+            background: rgba(255, 205, 50, 0.25);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        /* Right Side Inspector Popover Card */
+        #inspector-card {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 205, 50, 0.4);
+            border-radius: 12px;
+            padding: 20px 24px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.75);
+            width: 380px;
+            display: none;
+            animation: fadeInRight 0.3s ease forwards;
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .inspector-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            background: rgba(255, 205, 50, 0.18);
+            color: var(--accent-gold);
+            border: 1px solid rgba(255, 205, 50, 0.4);
+        }
+
+        .inspector-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0 0 12px 0;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .inspector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .grid-item-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .grid-item-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-top: 2px;
+        }
+
+        .inspector-desc {
+            font-size: 12px;
+            line-height: 1.55;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+
+        .inspector-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-focus {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(64, 160, 255, 0.35), rgba(30, 64, 175, 0.6));
+            border: 1px solid var(--accent-cyan);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #ffffff;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            transition: all 0.2s;
+        }
+
+        .btn-focus:hover {
+            background: linear-gradient(135deg, rgba(64, 160, 255, 0.55), rgba(30, 64, 175, 0.8));
+            box-shadow: 0 0 12px rgba(80, 208, 255, 0.4);
+        }
+
+        .btn-close {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            padding: 8px 14px;
+            color: #94a3b8;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        /* Bottom Control Bar */
+        #bottom-bar {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--panel-bg);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 30px;
+            padding: 8px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            z-index: 100;
+        }
+
+        .control-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 16px;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+
+        .control-divider {
+            width: 1px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .hint-text {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Tooltip hover tag */
+        #hover-tag {
+            position: absolute;
+            display: none;
+            pointer-events: none;
+            z-index: 200;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--accent-gold);
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transform: translate(-50%, -130%);
+            white-space: nowrap;
+        }
+    </style>
+
+    <!-- Pre-load offline Base64 payload (No CORS restrictions under file://) -->
+    <script src="model_data.js"></script>
+
+    <!-- Three.js + Tween.js + Controls + Loaders -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+</head>
+<body>
+
+    <!-- Loading Screen Overlay -->
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <div class="loading-title">Harmonic Cosmic Cylinder</div>
+        <div class="loading-status" id="loading-status">Initializing Spacetime Viewport...</div>
+        <div class="progress-track">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- CORS / Local File Fallback Overlay -->
+    <div id="cors-fallback">
+        <div class="fallback-box">
+            <h2>Cosmic Model Not Found</h2>
+            <p>
+                When opening HTML files directly via <code>file:///</code>, browsers block local file loading for security (CORS).
+                <br><br>
+                <strong>You can either:</strong>
+                <br>
+                1. Select the <code>jwst_harmonic_cosmic_cylinder.glb</code> file below, or
+                <br>
+                2. Run <code>launch_cylinder_viewer.bat</code> in the project root to start the local server.
+            </p>
+            <div class="drop-zone" id="drop-zone">
+                <p style="margin: 0 0 10px 0; color: var(--accent-cyan); font-weight: 600;">
+                    Drag & Drop <code>jwst_harmonic_cosmic_cylinder.glb</code> here
+                </p>
+                <label class="btn-browse">
+                    Browse File
+                    <input type="file" id="file-input" accept=".glb,.gltf" style="display: none;">
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Left HUD -->
+    <div id="hud-main">
+        <h1>
+            <span>Harmonic Cosmic Cylinder</span>
+            <span style="font-size: 10px; color: var(--accent-cyan);">60 FPS</span>
+        </h1>
+        <div class="subtitle">4D FLRW Spacetime Trumpet Worldtube</div>
+
+        <div class="metric-row">
+            <span class="metric-label">Spacetime Blocks</span>
+            <span class="metric-val">4 Stages (Z: -80 to +190)</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Optical Spine</span>
+            <span class="metric-val">Cyan Relativistic Geodesic Beam</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Einstein Lens Gate</span>
+            <span class="metric-val">Golden Ring R_E = 36 (z = 0.39)</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Circle of Fifths</span>
+            <span class="metric-val">12 Ribs (Consonant & Tritone)</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Galactic Geometry</span>
+            <span class="metric-val">Volumetric Cross-Quad (No Clones)</span>
+        </div>
+        <div class="metric-row">
+            <span class="metric-label">Harmonic Pulse</span>
+            <span class="metric-val" id="time-val" style="color: var(--accent-gold);">0.00 s / 12.00 s</span>
+        </div>
+
+        <!-- Object Navigator Dropdown -->
+        <div class="selector-box">
+            <label class="selector-label" for="object-select">Inspect Spacetime Component:</label>
+            <select id="object-select">
+                <option value="">-- Click on 3D Object or Select Below --</option>
+                <optgroup label="Stage 1: Observer & Optical Spine">
+                    <option value="01_Optical_Axis_Spine">01. Optical Axis Spine</option>
+                    <option value="02_Observer_Gate_JWST">02. Observer Gate (JWST)</option>
+                </optgroup>
+                <optgroup label="Stage 2: SMACS 0723 Lens & Cluster">
+                    <option value="03_Einstein_Lens_Ring">03. Einstein Lens Ring</option>
+                    <option value="04_Central_Monster_Galaxy">04. Central Monster BCG Galaxy</option>
+                    <option value="06_Lensed_Einstein_Arc">06. Lensed Einstein Arc Ribbon</option>
+                    <option value="07_Cluster_Galaxies_Zone">07. Cluster Galaxies Zone (90 Galaxies)</option>
+                </optgroup>
+                <optgroup label="Stage 3: Deep Field & Starburst">
+                    <option value="08_Cosmic_Noon_Ring">08. Cosmic Noon Epoch Ring</option>
+                    <option value="09_Starburst_Spiral_Galaxy">09. Starburst Spiral Galaxy</option>
+                    <option value="10_Deep_Field_Galaxies">10. Deep Field Galaxies (80 Primordial)</option>
+                    <option value="11_The_Sparkler_z6">11. The Sparkler Protogalaxy (z ~ 6)</option>
+                </optgroup>
+                <optgroup label="Stage 4: Cosmic Horizon & Harmonics">
+                    <option value="12_Big_Bang_Horizon_Ring">12. Big Bang Horizon Ring (Thin Ring)</option>
+                    <option value="13_Harmonic_Lattice_Spines">13. Minimal Skeletal Ribs (12 Hairline Spines)</option>
+                </optgroup>
+            </select>
+
+            <div class="chip-container">
+                <button class="chip-btn" data-key="03_Einstein_Lens_Ring">Lens Ring</button>
+                <button class="chip-btn" data-key="06_Lensed_Einstein_Arc">Einstein Arc</button>
+                <button class="chip-btn" data-key="04_Central_Monster_Galaxy">BCG Galaxy</button>
+                <button class="chip-btn" data-key="11_The_Sparkler_z6">Sparkler z=6</button>
+                <button class="chip-btn" data-key="12_Big_Bang_Horizon_Ring">Big Bang Ring</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side Component Inspector Card -->
+    <div id="inspector-card">
+        <div class="inspector-badge" id="card-badge">Stage 2: Gravitational Lens</div>
+        <div class="inspector-title" id="card-title">03. Einstein Lens Ring</div>
+        
+        <div class="inspector-grid">
+            <div>
+                <div class="grid-item-label">Lookback Time</div>
+                <div class="grid-item-value" id="card-lookback">4.6 Gyr</div>
+            </div>
+            <div>
+                <div class="grid-item-label">Redshift</div>
+                <div class="grid-item-value" id="card-redshift">z = 0.39</div>
+            </div>
+            <div>
+                <div class="grid-item-label">Spacetime Z</div>
+                <div class="grid-item-value" id="card-z">Z = 0.0</div>
+            </div>
+            <div>
+                <div class="grid-item-label">Metric Mode</div>
+                <div class="grid-item-value" id="card-metric">Deflection Gate</div>
+            </div>
+        </div>
+
+        <div class="inspector-desc" id="card-desc">
+            Deflection gate description goes here...
+        </div>
+
+        <div class="inspector-actions">
+            <button class="btn-focus" id="btn-focus-cam">Focus Camera</button>
+            <button class="btn-close" id="btn-close-card">Close</button>
+        </div>
+    </div>
+
+    <!-- Bottom Playback & View Bar -->
+    <div id="bottom-bar">
+        <button class="control-btn" id="btn-play-pause">
+            <span id="play-icon">&#10074;&#10074;</span> Pause
+        </button>
+        <div class="control-divider"></div>
+        <button class="control-btn" id="btn-speed">1.0x Speed</button>
+        <div class="control-divider"></div>
+        <button class="control-btn" id="btn-reset-view">&#8635; Full Worldtube View</button>
+        <div class="control-divider"></div>
+        <span class="hint-text">Click any 3D object to inspect astrophysics</span>
+    </div>
+
+    <div id="hover-tag">Object Tag</div>
+    <div id="canvas-container"></div>
+
+    <script>
+        // Scientific Registry
+        const OBJECT_REGISTRY = {
+            "01_Optical_Axis_Spine": {
+                title: "01. Optical Axis Line-of-Sight Spine",
+                category: "Stage 1: Observer & Optical Spine",
+                zPos: "Z = -80 to +190",
+                lookback: "0.0 to 13.5 Gyr",
+                redshift: "z = 0.0 to 15.0+",
+                metric: "Null Geodesic Line",
+                color: "#50d0ff",
+                description: "The primary relativistic line-of-sight axis aligning the JWST observer aperture at Sun-Earth L2 directly through the BCG mass core of SMACS J0723 and back to the edge of the observable universe.",
+                camPos: [85, 45, 55],
+                targetPos: [0, 0, 55]
+            },
+            "02_Observer_Gate_JWST": {
+                title: "02. Observer Gate (JWST Sun-Earth L2)",
+                category: "Stage 1: Observer & Optical Spine",
+                zPos: "Z = -80.0",
+                lookback: "0.0 Gyr (Present Day)",
+                redshift: "z = 0.00",
+                metric: "Entrance Pupil",
+                color: "#50e4ff",
+                description: "Observer entrance aperture at Z = -80 representing the James Webb Space Telescope stationed at the Second Sun-Earth Lagrange Point. Photons traveling for up to 13.5 billion years enter this aperture today.",
+                camPos: [45, 25, -60],
+                targetPos: [0, 0, -80]
+            },
+            "03_Einstein_Lens_Ring": {
+                title: "03. Einstein Lens Ring (Critical Radius)",
+                category: "Stage 2: SMACS 0723 Gravitational Lens",
+                zPos: "Z = 0.0",
+                lookback: "4.6 Gyr",
+                redshift: "z = 0.39",
+                metric: "R_E = 36 kpc",
+                color: "#ffd700",
+                description: "The critical Einstein Radius where gravitational spacetime curvature caused by the multi-trillion solar mass cluster deflects passing tangential geodesics by α = 4GM / (c²ξ).",
+                camPos: [65, 30, 20],
+                targetPos: [0, 0, 0]
+            },
+            "04_Central_Monster_Galaxy": {
+                title: "04. Central Monster BCG Galaxy",
+                category: "Stage 2: SMACS 0723 Gravitational Lens",
+                zPos: "Z = 0.0 (Cluster Core)",
+                lookback: "4.6 Gyr",
+                redshift: "z = 0.39",
+                metric: "de Vaucouleurs Halo",
+                color: "#fff2cc",
+                description: "The Brightest Cluster Galaxy (BCG) of SMACS J0723.3-7327. Contains hundreds of billions of solar masses in stars and an immense dark matter halo that anchors the primary gravitational lens potential.",
+                camPos: [24, 12, 12],
+                targetPos: [0, 0, 0]
+            },
+            "06_Lensed_Einstein_Arc": {
+                title: "06. Lensed Einstein Arc Ribbon",
+                category: "Stage 2: SMACS 0723 Gravitational Lens",
+                zPos: "Z = +65.0",
+                lookback: "9.2 Gyr",
+                redshift: "z = 1.40",
+                metric: "Magnification ~20x",
+                color: "#ff9800",
+                description: "Background source galaxy gravitationally magnified by ~20x and sheared into an iconic curved crescent banana arc. The 3D geometry is modeled as a curved spacetime ribbon mapped directly from real JWST NIRCam astrometry.",
+                camPos: [42, 28, 80],
+                targetPos: [22, 22, 65]
+            },
+            "07_Cluster_Galaxies_Zone": {
+                title: "07. Virialized Cluster Galaxies Zone",
+                category: "Stage 2: SMACS 0723 Gravitational Lens",
+                zPos: "Z = -16 to +16",
+                lookback: "4.4 to 4.8 Gyr",
+                redshift: "z ≈ 0.39",
+                metric: "90 Distinct Members",
+                color: "#ffe082",
+                description: "90 genuine, non-duplicate member galaxies bound inside the SMACS 0723 gravitational potential well. Foreground Milky Way stars have been eliminated via iterative Non-Maximum Suppression (NMS).",
+                camPos: [65, 35, 15],
+                targetPos: [0, 0, 0]
+            },
+            "08_Cosmic_Noon_Ring": {
+                title: "08. Cosmic Noon Epoch Ring",
+                category: "Stage 3: Deep Field & Cosmic Evolution",
+                zPos: "Z = +75.0",
+                lookback: "10.5 Gyr",
+                redshift: "z ≈ 2.0 to 2.5",
+                metric: "Peak Starburst",
+                color: "#d870e8",
+                description: "Luminous purple epoch ring marking 'Cosmic Noon': the era ~10 billion years ago when universal star formation and supermassive black hole accretion rates reached their all-time cosmic zenith.",
+                camPos: [80, 42, 90],
+                targetPos: [0, 0, 75]
+            },
+            "09_Starburst_Spiral_Galaxy": {
+                title: "09. Starburst Merger Spiral Galaxy",
+                category: "Stage 3: Deep Field & Cosmic Evolution",
+                zPos: "Z = +45.0 (-20, 16, 45)",
+                lookback: "7.8 Gyr",
+                redshift: "z ≈ 0.80",
+                metric: "Major Merger",
+                color: "#80d8ff",
+                description: "An active star-forming spiral merger displaying high ultraviolet luminosity and tidal arm distortion, illustrating rapid galactic structural transformation in intermediate cosmic epochs.",
+                camPos: [-5, 28, 55],
+                targetPos: [-20, 16, 45]
+            },
+            "10_Deep_Field_Galaxies": {
+                title: "10. Primordial Deep Field Galaxies",
+                category: "Stage 3: Deep Field & Cosmic Evolution",
+                zPos: "Z = +35 to +180",
+                lookback: "6.5 to 13.1 Gyr",
+                redshift: "z = 1.0 to 10.0",
+                metric: "80 SED Redshifted",
+                color: "#ff7043",
+                description: "80 primordial early-universe galaxies captured by JWST NIRCam deep exposures. Their ultraviolet rest-frame emissions have undergone extreme cosmological redshift into near-infrared amber and crimson hues.",
+                camPos: [95, 55, 115],
+                targetPos: [0, 0, 110]
+            },
+            "11_The_Sparkler_z6": {
+                title: "11. The Sparkler Protogalaxy (z ~ 6.1)",
+                category: "Stage 3: Deep Field & Cosmic Evolution",
+                zPos: "Z = +160.0 (32, -40, 160)",
+                lookback: "13.0 Gyr",
+                redshift: "z = 6.10",
+                metric: "Globular Clusters",
+                color: "#ff5252",
+                description: "The celebrated 'Sparkler' galaxy hosting compact globular star clusters formed in the reionization era just 700 million years after the Big Bang, discovered in JWST's First Deep Field.",
+                camPos: [48, -25, 172],
+                targetPos: [32, -40, 160]
+            },
+            "12_Big_Bang_Horizon_Ring": {
+                title: "12. Big Bang Horizon Boundary Ring (Thin Ring)",
+                category: "Stage 4: Cosmic Horizon & Harmonics",
+                zPos: "Z = +190.0",
+                lookback: "13.8 Gyr",
+                redshift: "z → 1100 (CMB)",
+                metric: "Event Horizon Ring",
+                color: "#ff6e40",
+                description: "Slender boundary ring indicating the Cosmic Microwave Background (CMB) recombination era where primordial plasma cooled into neutral hydrogen 380,000 years after the Big Bang (zero solid orange dome).",
+                camPos: [110, 65, 215],
+                targetPos: [0, 0, 190]
+            },
+            "13_Harmonic_Lattice_Spines": {
+                title: "13. Minimal Skeletal Ribs (12 Circle of 5ths Spines)",
+                category: "Stage 4: Cosmic Horizon & Harmonics",
+                zPos: "Full Cylinder (-80 to +190)",
+                lookback: "Full Cosmic Timeline",
+                redshift: "Universal Worldtube",
+                metric: "12 Hairline Spines",
+                color: "#ffe082",
+                description: "12 slender longitudinal hairline rails tracing the FLRW trumpet expansion curve without obscuring interior galaxies. Consonant ribs form clean geometric rails; tritone ribs exhibit subtle relativistic flutter.",
+                camPos: [210, 95, 55],
+                targetPos: [0, 0, 55]
+            }
+        };
+
+        // Loading Screen Helpers
+        const loadingScreen = document.getElementById('loading-screen');
+        const loadingStatus = document.getElementById('loading-status');
+        const progressBar = document.getElementById('progress-bar');
+        const corsFallback = document.getElementById('cors-fallback');
+
+        function updateLoading(msg, pct) {
+            if (loadingStatus) loadingStatus.textContent = msg;
+            if (progressBar && pct !== undefined) progressBar.style.width = pct + '%';
+        }
+
+        function hideLoading() {
+            if (loadingScreen) loadingScreen.classList.add('hidden');
+        }
+
+        function showCorsFallback() {
+            hideLoading();
+            if (corsFallback) corsFallback.style.display = 'flex';
+        }
+
+        // Three.js Scene Setup
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x020306);
+        scene.fog = new THREE.FogExp2(0x020306, 0.0012);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2500);
+        camera.position.set(240, 110, 45);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.35;
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.target.set(0, 0, 55);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.90);
+        scene.add(ambientLight);
+
+        const dirLight1 = new THREE.DirectionalLight(0xffecd2, 1.25);
+        dirLight1.position.set(100, 150, 100);
+        scene.add(dirLight1);
+
+        const dirLight2 = new THREE.DirectionalLight(0x70b0ff, 0.95);
+        dirLight2.position.set(-100, -50, -100);
+        scene.add(dirLight2);
+
+        let mixer = null;
+        let animAction = null;
+        let isPlaying = true;
+        let playbackSpeed = 1.0;
+        const clock = new THREE.Clock();
+
+        let gltfRoot = null;
+        const clickableMeshes = [];
+
+        // Raycasting for Interactivity
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        const hoverTag = document.getElementById('hover-tag');
+        let selectedObjectKey = null;
+
+        const loader = new THREE.GLTFLoader();
+
+        // Model Initialization Callback
+        function onModelReady(gltf) {
+            updateLoading("Rendering Spacetime Trumpet...", 95);
+            if (gltfRoot) scene.remove(gltfRoot);
+            clickableMeshes.length = 0;
+
+            gltfRoot = gltf.scene;
+            scene.add(gltfRoot);
+
+            gltfRoot.traverse(function (child) {
+                if (child.isMesh) {
+                    clickableMeshes.push(child);
+                    if (child.material) {
+                        child.material.side = THREE.DoubleSide;
+                        child.material.transparent = true;
+                    }
+                }
+            });
+
+            if (gltf.animations && gltf.animations.length) {
+                mixer = new THREE.AnimationMixer(gltfRoot);
+                animAction = mixer.clipAction(gltf.animations[0]);
+                animAction.play();
+            }
+
+            console.log("Model successfully loaded! Clickable meshes:", clickableMeshes.length);
+            updateLoading("Ready!", 100);
+            setTimeout(hideLoading, 300);
+            corsFallback.style.display = 'none';
+        }
+
+        // Multi-tier Model Loading Strategy
+        function loadCosmicModel() {
+            // Tier 1: Embedded Base64 (100% offline, zero-CORS file:// protocol)
+            if (window.CYLINDER_MODEL_BASE64 && window.CYLINDER_MODEL_BASE64.length > 1000) {
+                updateLoading("Decoding Offline Spacetime Model...", 35);
+                try {
+                    const binStr = atob(window.CYLINDER_MODEL_BASE64);
+                    const len = binStr.length;
+                    const bytes = new Uint8Array(len);
+                    for (let i = 0; i < len; i++) {
+                        bytes[i] = binStr.charCodeAt(i);
+                    }
+                    updateLoading("Parsing 4D Spacetime Hierarchy...", 70);
+                    loader.parse(bytes.buffer, '', onModelReady, function (err) {
+                        console.warn("Base64 parse error, trying network fetch:", err);
+                        tryNetworkFetch();
+                    });
+                    return;
+                } catch (e) {
+                    console.warn("Base64 decode failed, trying network fetch:", e);
+                }
+            }
+
+            // Tier 2: Network Fetch (works on http://localhost:8089)
+            tryNetworkFetch();
+        }
+
+        function tryNetworkFetch() {
+            updateLoading("Fetching jwst_minimal_accurate_cosmos.glb...", 40);
+            loader.load(
+                'recordings/jwst_minimal_accurate_cosmos.glb',
+                onModelReady,
+                function (xhr) {
+                    if (xhr.lengthComputable) {
+                        const pct = Math.round((xhr.loaded / xhr.total) * 90);
+                        updateLoading(`Downloading Model: ${pct}%`, pct);
+                    }
+                },
+                function (err) {
+                    console.error("Network fetch failed (likely CORS on file:// or server offline):", err);
+                    showCorsFallback();
+                }
+            );
+        }
+
+        // Tier 3: Drag & Drop & Local File Picker Handlers
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+
+        window.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        window.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+        window.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleUserGlbFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleUserGlbFile(e.target.files[0]);
+            }
+        });
+
+        function handleUserGlbFile(file) {
+            updateLoading("Reading dropped .glb file...", 50);
+            loadingScreen.classList.remove('hidden');
+            corsFallback.style.display = 'none';
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const buffer = event.target.result;
+                updateLoading("Parsing 3D scene...", 80);
+                loader.parse(buffer, '', onModelReady, function (err) {
+                    alert("Error parsing GLB file: " + err.message);
+                    showCorsFallback();
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Start loading
+        loadCosmicModel();
+
+        // Hierarchy key resolver
+        function findKeyFromObject(obj) {
+            let cur = obj;
+            while (cur && cur !== scene) {
+                if (cur.name) {
+                    for (let k in OBJECT_REGISTRY) {
+                        if (cur.name === k || cur.name === "Mesh_" + k || cur.name.includes(k)) {
+                            return k;
+                        }
+                    }
+                }
+                cur = cur.parent;
+            }
+            return null;
+        }
+
+        // Raycasting on Mouse Move
+        window.addEventListener('mousemove', function (e) {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(clickableMeshes, true);
+
+            if (intersects.length > 0) {
+                const hitKey = findKeyFromObject(intersects[0].object);
+                if (hitKey && OBJECT_REGISTRY[hitKey]) {
+                    const data = OBJECT_REGISTRY[hitKey];
+                    hoverTag.textContent = data.title;
+                    hoverTag.style.left = e.clientX + 'px';
+                    hoverTag.style.top = e.clientY + 'px';
+                    hoverTag.style.display = 'block';
+                    container.style.cursor = 'pointer';
+                    return;
+                }
+            }
+            hoverTag.style.display = 'none';
+            container.style.cursor = 'default';
+        });
+
+        // Click on 3D Object
+        window.addEventListener('click', function (e) {
+            if (e.target.closest('#hud-main') || e.target.closest('#inspector-card') || e.target.closest('#bottom-bar') || e.target.closest('#cors-fallback')) {
+                return;
+            }
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(clickableMeshes, true);
+
+            if (intersects.length > 0) {
+                const hitKey = findKeyFromObject(intersects[0].object);
+                if (hitKey) {
+                    selectComponent(hitKey);
+                }
+            }
+        });
+
+        // UI Card & Focus Logic
+        const inspectorCard = document.getElementById('inspector-card');
+        const cardBadge = document.getElementById('card-badge');
+        const cardTitle = document.getElementById('card-title');
+        const cardLookback = document.getElementById('card-lookback');
+        const cardRedshift = document.getElementById('card-redshift');
+        const cardZ = document.getElementById('card-z');
+        const cardMetric = document.getElementById('card-metric');
+        const cardDesc = document.getElementById('card-desc');
+        const objectSelect = document.getElementById('object-select');
+
+        function selectComponent(key) {
+            if (!OBJECT_REGISTRY[key]) return;
+            selectedObjectKey = key;
+            const data = OBJECT_REGISTRY[key];
+
+            cardBadge.textContent = data.category;
+            cardTitle.textContent = data.title;
+            cardLookback.textContent = data.lookback;
+            cardRedshift.textContent = data.redshift;
+            cardZ.textContent = data.zPos;
+            cardMetric.textContent = data.metric;
+            cardDesc.textContent = data.description;
+
+            inspectorCard.style.display = 'block';
+            objectSelect.value = key;
+
+            document.querySelectorAll('.chip-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-key') === key);
+            });
+        }
+
+        function focusCameraOn(key) {
+            const data = OBJECT_REGISTRY[key];
+            if (!data) return;
+
+            new TWEEN.Tween(camera.position)
+                .to({ x: data.camPos[0], y: data.camPos[1], z: data.camPos[2] }, 1400)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            new TWEEN.Tween(controls.target)
+                .to({ x: data.targetPos[0], y: data.targetPos[1], z: data.targetPos[2] }, 1400)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+        }
+
+        document.getElementById('btn-focus-cam').addEventListener('click', function () {
+            if (selectedObjectKey) {
+                focusCameraOn(selectedObjectKey);
+            }
+        });
+
+        document.getElementById('btn-close-card').addEventListener('click', function () {
+            inspectorCard.style.display = 'none';
+            selectedObjectKey = null;
+            objectSelect.value = "";
+            document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+        });
+
+        objectSelect.addEventListener('change', function (e) {
+            if (e.target.value) {
+                selectComponent(e.target.value);
+                focusCameraOn(e.target.value);
+            }
+        });
+
+        document.querySelectorAll('.chip-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const k = this.getAttribute('data-key');
+                selectComponent(k);
+                focusCameraOn(k);
+            });
+        });
+
+        // Bottom Bar Controls
+        const btnPlayPause = document.getElementById('btn-play-pause');
+        const playIcon = document.getElementById('play-icon');
+        btnPlayPause.addEventListener('click', function () {
+            if (!animAction) return;
+            isPlaying = !isPlaying;
+            animAction.paused = !isPlaying;
+            playIcon.innerHTML = isPlaying ? '&#10074;&#10074;' : '&#9658;';
+            btnPlayPause.innerHTML = `<span id="play-icon">${playIcon.innerHTML}</span> ${isPlaying ? 'Pause' : 'Play'}`;
+        });
+
+        const btnSpeed = document.getElementById('btn-speed');
+        const speedOptions = [0.5, 1.0, 2.0];
+        let speedIdx = 1;
+        btnSpeed.addEventListener('click', function () {
+            speedIdx = (speedIdx + 1) % speedOptions.length;
+            playbackSpeed = speedOptions[speedIdx];
+            if (mixer) mixer.timeScale = playbackSpeed;
+            btnSpeed.textContent = `${playbackSpeed.toFixed(1)}x Speed`;
+        });
+
+        document.getElementById('btn-reset-view').addEventListener('click', function () {
+            inspectorCard.style.display = 'none';
+            selectedObjectKey = null;
+            objectSelect.value = "";
+            document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+
+            new TWEEN.Tween(camera.position)
+                .to({ x: 240, y: 110, z: 45 }, 1200)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            new TWEEN.Tween(controls.target)
+                .to({ x: 0, y: 0, z: 55 }, 1200)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+        });
+
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        const timeValElem = document.getElementById('time-val');
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+            TWEEN.update();
+
+            const delta = clock.getDelta();
+            if (mixer && isPlaying) {
+                mixer.update(delta);
+                const animTime = mixer.time % 12.0;
+                timeValElem.textContent = `${animTime.toFixed(2)} s / 12.00 s`;
+            }
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>
