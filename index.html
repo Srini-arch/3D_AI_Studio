@@ -196,7 +196,57 @@
             backdrop-filter: blur(12px);
             box-shadow: 0 10px 35px rgba(0, 0, 0, 0.65);
             width: 360px;
-            transition: all 0.3s ease;
+            max-width: calc(100vw - 40px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: default;
+        }
+
+        #hud-main.collapsed {
+            width: auto;
+            max-width: calc(100vw - 32px);
+            padding: 10px 16px;
+            cursor: pointer;
+        }
+
+        #hud-main.collapsed #hud-content,
+        #hud-main.collapsed .subtitle {
+            display: none !important;
+        }
+
+        .collapsed-hint {
+            display: none;
+            font-size: 10px;
+            color: var(--accent-cyan);
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        #hud-main.collapsed .collapsed-hint {
+            display: block;
+        }
+
+        .btn-toggle-hud {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: var(--accent-cyan);
+            border-radius: 6px;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .btn-toggle-hud:hover {
+            background: rgba(56, 189, 248, 0.3);
+            border-color: var(--accent-cyan);
+            color: #ffffff;
         }
 
         h1 {
@@ -208,6 +258,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 12px;
+        }
+
+        #hud-main.collapsed h1 {
+            margin: 0;
+            font-size: 13px;
         }
 
         .subtitle {
@@ -485,7 +541,93 @@
             color: #ffffff;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             transform: translate(-50%, -130%);
-            white-space: nowrap;
+        }
+
+        /* Responsive Mobile Styles */
+        @media (max-width: 768px) {
+            #hud-main {
+                top: 12px;
+                left: 12px;
+                right: 12px;
+                width: auto;
+                max-width: calc(100vw - 24px);
+                padding: 12px 16px;
+            }
+
+            #hud-main.collapsed {
+                top: 12px;
+                left: 12px;
+                right: auto;
+                max-width: calc(100vw - 24px);
+                padding: 8px 14px;
+            }
+
+            h1 {
+                font-size: 13px;
+                gap: 8px;
+            }
+
+            .subtitle {
+                font-size: 10px;
+                margin-bottom: 8px;
+            }
+
+            .metric-row {
+                font-size: 10.5px;
+                margin-bottom: 4px;
+                padding-bottom: 2px;
+            }
+
+            .selector-box {
+                margin-top: 8px;
+                padding-top: 8px;
+            }
+
+            .selector-label {
+                font-size: 10.5px;
+                margin-bottom: 4px;
+            }
+
+            select#object-select {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+
+            .chip-container {
+                gap: 4px;
+                margin-top: 6px;
+            }
+
+            .chip-btn {
+                font-size: 10px;
+                padding: 3px 8px;
+            }
+
+            #inspector-card {
+                top: auto;
+                bottom: 72px;
+                left: 12px;
+                right: 12px;
+                width: auto;
+                max-width: calc(100vw - 24px);
+                padding: 14px 16px;
+            }
+
+            #bottom-bar {
+                bottom: 12px;
+                padding: 6px 14px;
+                gap: 8px;
+                max-width: calc(100vw - 24px);
+            }
+
+            .control-btn {
+                font-size: 11px;
+                padding: 3px 6px;
+            }
+
+            .hint-text {
+                display: none;
+            }
         }
     </style>
 
@@ -538,69 +680,75 @@
     <!-- Top Left HUD -->
     <div id="hud-main">
         <h1>
-            <span>Harmonic Cosmic Cylinder</span>
-            <span style="font-size: 10px; color: var(--accent-cyan);">60 FPS</span>
+            <span style="display: flex; align-items: center; gap: 8px;">
+                <span>Harmonic Cosmic Cylinder</span>
+                <span style="font-size: 10px; color: var(--accent-cyan);">60 FPS</span>
+            </span>
+            <button id="btn-hud-toggle" class="btn-toggle-hud" aria-label="Toggle Panel" title="Collapse Panel">−</button>
         </h1>
-        <div class="subtitle">4D FLRW Spacetime Trumpet Worldtube</div>
+        <div class="collapsed-hint">🧭 Tap to Inspect Components & Telemetry ▾</div>
+        <div id="hud-content">
+            <div class="subtitle">4D FLRW Spacetime Trumpet Worldtube</div>
 
-        <div class="metric-row">
-            <span class="metric-label">Spacetime Blocks</span>
-            <span class="metric-val">4 Stages (Z: -80 to +190)</span>
-        </div>
-        <div class="metric-row">
-            <span class="metric-label">Optical Spine</span>
-            <span class="metric-val">Cyan Relativistic Geodesic Beam</span>
-        </div>
-        <div class="metric-row">
-            <span class="metric-label">Einstein Lens Gate</span>
-            <span class="metric-val">Golden Ring R_E = 36 (z = 0.39)</span>
-        </div>
-        <div class="metric-row">
-            <span class="metric-label">Circle of Fifths</span>
-            <span class="metric-val">12 Ribs (Consonant & Tritone)</span>
-        </div>
-        <div class="metric-row">
-            <span class="metric-label">Galactic Geometry</span>
-            <span class="metric-val">Volumetric Cross-Quad (No Clones)</span>
-        </div>
-        <div class="metric-row">
-            <span class="metric-label">Harmonic Pulse</span>
-            <span class="metric-val" id="time-val" style="color: var(--accent-gold);">0.00 s / 12.00 s</span>
-        </div>
+            <div class="metric-row">
+                <span class="metric-label">Spacetime Blocks</span>
+                <span class="metric-val">4 Stages (Z: -80 to +190)</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Optical Spine</span>
+                <span class="metric-val">Cyan Relativistic Geodesic Beam</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Einstein Lens Gate</span>
+                <span class="metric-val">Golden Ring R_E = 36 (z = 0.39)</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Circle of Fifths</span>
+                <span class="metric-val">12 Ribs (Consonant & Tritone)</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Galactic Geometry</span>
+                <span class="metric-val">Volumetric Cross-Quad (No Clones)</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Harmonic Pulse</span>
+                <span class="metric-val" id="time-val" style="color: var(--accent-gold);">0.00 s / 12.00 s</span>
+            </div>
 
-        <!-- Object Navigator Dropdown -->
-        <div class="selector-box">
-            <label class="selector-label" for="object-select">Inspect Spacetime Component:</label>
-            <select id="object-select">
-                <option value="">-- Click on 3D Object or Select Below --</option>
-                <optgroup label="Stage 1: Observer & Optical Spine">
-                    <option value="01_Optical_Axis_Spine">01. Optical Axis Spine</option>
-                    <option value="02_Observer_Gate_JWST">02. Observer Gate (JWST)</option>
-                </optgroup>
-                <optgroup label="Stage 2: SMACS 0723 Lens & Cluster">
-                    <option value="03_Einstein_Lens_Ring">03. Einstein Lens Ring</option>
-                    <option value="04_Central_Monster_Galaxy">04. Central Monster BCG Galaxy</option>
-                    <option value="06_Lensed_Einstein_Arc">06. Lensed Einstein Arc Ribbon</option>
-                    <option value="07_Cluster_Galaxies_Zone">07. Cluster Galaxies Zone (90 Galaxies)</option>
-                </optgroup>
-                <optgroup label="Stage 3: Deep Field & Starburst">
-                    <option value="08_Cosmic_Noon_Ring">08. Cosmic Noon Epoch Ring</option>
-                    <option value="09_Starburst_Spiral_Galaxy">09. Starburst Spiral Galaxy</option>
-                    <option value="10_Deep_Field_Galaxies">10. Deep Field Galaxies (80 Primordial)</option>
-                    <option value="11_The_Sparkler_z6">11. The Sparkler Protogalaxy (z ~ 6)</option>
-                </optgroup>
-                <optgroup label="Stage 4: Cosmic Horizon & Harmonics">
-                    <option value="12_Big_Bang_Horizon_Ring">12. Big Bang Horizon Ring (Thin Ring)</option>
-                    <option value="13_Harmonic_Lattice_Spines">13. Minimal Skeletal Ribs (12 Hairline Spines)</option>
-                </optgroup>
-            </select>
+            <!-- Object Navigator Dropdown -->
+            <div class="selector-box">
+                <label class="selector-label" for="object-select">Inspect Spacetime Component:</label>
+                <select id="object-select">
+                    <option value="">-- Click on 3D Object or Select Below --</option>
+                    <optgroup label="Stage 1: Observer & Optical Spine">
+                        <option value="01_Optical_Axis_Spine">01. Optical Axis Spine</option>
+                        <option value="02_Observer_Gate_JWST">02. Observer Gate (JWST)</option>
+                    </optgroup>
+                    <optgroup label="Stage 2: SMACS 0723 Lens & Cluster">
+                        <option value="03_Einstein_Lens_Ring">03. Einstein Lens Ring</option>
+                        <option value="04_Central_Monster_Galaxy">04. Central Monster BCG Galaxy</option>
+                        <option value="06_Lensed_Einstein_Arc">06. Lensed Einstein Arc Ribbon</option>
+                        <option value="07_Cluster_Galaxies_Zone">07. Cluster Galaxies Zone (90 Galaxies)</option>
+                    </optgroup>
+                    <optgroup label="Stage 3: Deep Field & Starburst">
+                        <option value="08_Cosmic_Noon_Ring">08. Cosmic Noon Epoch Ring</option>
+                        <option value="09_Starburst_Spiral_Galaxy">09. Starburst Spiral Galaxy</option>
+                        <option value="10_Deep_Field_Galaxies">10. Deep Field Galaxies (80 Primordial)</option>
+                        <option value="11_The_Sparkler_z6">11. The Sparkler Protogalaxy (z ~ 6)</option>
+                    </optgroup>
+                    <optgroup label="Stage 4: Cosmic Horizon & Harmonics">
+                        <option value="12_Big_Bang_Horizon_Ring">12. Big Bang Horizon Ring (Thin Ring)</option>
+                        <option value="13_Harmonic_Lattice_Spines">13. Minimal Skeletal Ribs (12 Hairline Spines)</option>
+                    </optgroup>
+                </select>
 
-            <div class="chip-container">
-                <button class="chip-btn" data-key="03_Einstein_Lens_Ring">Lens Ring</button>
-                <button class="chip-btn" data-key="06_Lensed_Einstein_Arc">Einstein Arc</button>
-                <button class="chip-btn" data-key="04_Central_Monster_Galaxy">BCG Galaxy</button>
-                <button class="chip-btn" data-key="11_The_Sparkler_z6">Sparkler z=6</button>
-                <button class="chip-btn" data-key="12_Big_Bang_Horizon_Ring">Big Bang Ring</button>
+                <div class="chip-container">
+                    <button class="chip-btn" data-key="03_Einstein_Lens_Ring">Lens Ring</button>
+                    <button class="chip-btn" data-key="06_Lensed_Einstein_Arc">Einstein Arc</button>
+                    <button class="chip-btn" data-key="04_Central_Monster_Galaxy">BCG Galaxy</button>
+                    <button class="chip-btn" data-key="11_The_Sparkler_z6">Sparkler z=6</button>
+                    <button class="chip-btn" data-key="12_Big_Bang_Horizon_Ring">Big Bang Ring</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1109,10 +1257,48 @@
             document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
         });
 
+        // Collapsible HUD Panel Logic (Responsive Mobile Optimization)
+        const hudMain = document.getElementById('hud-main');
+        const btnHudToggle = document.getElementById('btn-hud-toggle');
+        let isHudCollapsed = window.innerWidth <= 768;
+
+        function updateHudState() {
+            if (isHudCollapsed) {
+                hudMain.classList.add('collapsed');
+                btnHudToggle.textContent = '+';
+                btnHudToggle.title = 'Expand Components';
+                btnHudToggle.setAttribute('aria-label', 'Expand Components');
+            } else {
+                hudMain.classList.remove('collapsed');
+                btnHudToggle.textContent = '−';
+                btnHudToggle.title = 'Collapse Panel';
+                btnHudToggle.setAttribute('aria-label', 'Collapse Panel');
+            }
+        }
+
+        btnHudToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            isHudCollapsed = !isHudCollapsed;
+            updateHudState();
+        });
+
+        hudMain.addEventListener('click', function () {
+            if (isHudCollapsed) {
+                isHudCollapsed = false;
+                updateHudState();
+            }
+        });
+
+        updateHudState();
+
         objectSelect.addEventListener('change', function (e) {
             if (e.target.value) {
                 selectComponent(e.target.value);
                 focusCameraOn(e.target.value);
+                if (window.innerWidth <= 768) {
+                    isHudCollapsed = true;
+                    updateHudState();
+                }
             }
         });
 
@@ -1121,6 +1307,10 @@
                 const k = this.getAttribute('data-key');
                 selectComponent(k);
                 focusCameraOn(k);
+                if (window.innerWidth <= 768) {
+                    isHudCollapsed = true;
+                    updateHudState();
+                }
             });
         });
 
