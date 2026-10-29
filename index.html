@@ -1039,6 +1039,135 @@
         dirLight2.position.set(-100, -50, -100);
         scene.add(dirLight2);
 
+        // 3D Parallax Astronomical Starfield (Thousands of spatial stars at varying depths)
+        let starPoints = null;
+        function createParallaxStarfield() {
+            if (starPoints) scene.remove(starPoints);
+
+            const starCount = 1800;
+            const starGeo = new THREE.BufferGeometry();
+            const positions = new Float32Array(starCount * 3);
+            const colors = new Float32Array(starCount * 3);
+            const sizes = new Float32Array(starCount);
+
+            const starColors = [
+                new THREE.Color(0xffffff), // Pure white
+                new THREE.Color(0xa5f3fc), // Cyan O/B star
+                new THREE.Color(0xfef08a), // Golden dwarf
+                new THREE.Color(0xfca5a5), // Crimson M-giant
+                new THREE.Color(0xe0e7ff)  // Diamond blue
+            ];
+
+            for (let i = 0; i < starCount; i++) {
+                let x, y, z;
+                // 35% foreground stars (Z from +25 to +95)
+                // 65% deep cosmic background stars (Z from -90 to -380)
+                if (Math.random() < 0.35) {
+                    x = (Math.random() - 0.5) * 260;
+                    y = (Math.random() - 0.5) * 190;
+                    z = 25 + Math.random() * 70;
+                } else {
+                    x = (Math.random() - 0.5) * 550;
+                    y = (Math.random() - 0.5) * 380;
+                    z = -90 - Math.random() * 290;
+                }
+
+                positions[i * 3] = x;
+                positions[i * 3 + 1] = y;
+                positions[i * 3 + 2] = z;
+
+                const col = starColors[Math.floor(Math.random() * starColors.length)];
+                colors[i * 3] = col.r;
+                colors[i * 3 + 1] = col.g;
+                colors[i * 3 + 2] = col.b;
+
+                sizes[i] = 1.2 + Math.random() * 2.8;
+            }
+
+            starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            starGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            starGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            // Procedural glowing circular particle texture
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+            grad.addColorStop(0.2, 'rgba(255, 255, 255, 0.85)');
+            grad.addColorStop(0.55, 'rgba(200, 230, 255, 0.25)');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 64, 64);
+
+            const starTex = new THREE.CanvasTexture(canvas);
+            const starMat = new THREE.PointsMaterial({
+                size: 2.2,
+                vertexColors: true,
+                map: starTex,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            starPoints = new THREE.Points(starGeo, starMat);
+            scene.add(starPoints);
+        }
+        createParallaxStarfield();
+
+        // Physical Protostellar Point Lights
+        const protostellarLights = [];
+        function clearProtostellarLights() {
+            protostellarLights.forEach(l => scene.remove(l));
+            protostellarLights.length = 0;
+        }
+
+        function setupProtostellarLights(sceneId) {
+            clearProtostellarLights();
+            if (sceneId === 'pillars_creation') {
+                const p1 = new THREE.PointLight(0xff5722, 2.0, 50);
+                p1.position.set(-8, 24, 22);
+                scene.add(p1);
+                protostellarLights.push(p1);
+
+                const p2 = new THREE.PointLight(0xffb74d, 1.6, 40);
+                p2.position.set(6, 8, 10);
+                scene.add(p2);
+                protostellarLights.push(p2);
+
+                const p3 = new THREE.PointLight(0xef4444, 1.4, 35);
+                p3.position.set(18, -4, -6);
+                scene.add(p3);
+                protostellarLights.push(p3);
+            } else if (sceneId === 'cartwheel_galaxy') {
+                const coreL = new THREE.PointLight(0x38bdf8, 2.4, 60);
+                coreL.position.set(0, 0, 6);
+                scene.add(coreL);
+                protostellarLights.push(coreL);
+
+                const ringL1 = new THREE.PointLight(0xf43f5e, 1.8, 45);
+                ringL1.position.set(30, 10, 10);
+                scene.add(ringL1);
+                protostellarLights.push(ringL1);
+
+                const ringL2 = new THREE.PointLight(0xfbbf24, 1.5, 40);
+                ringL2.position.set(-24, -16, -6);
+                scene.add(ringL2);
+                protostellarLights.push(ringL2);
+            } else if (sceneId === 'carina_cliffs') {
+                const cL1 = new THREE.PointLight(0xf59e0b, 2.0, 65);
+                cL1.position.set(-22, -6, 22);
+                scene.add(cL1);
+                protostellarLights.push(cL1);
+
+                const cL2 = new THREE.PointLight(0x38bdf8, 1.8, 60);
+                cL2.position.set(24, -8, 20);
+                scene.add(cL2);
+                protostellarLights.push(cL2);
+            }
+        }
+
         let gltfRoot = null;
         let mixer = null;
         let animAction = null;
@@ -1179,6 +1308,7 @@
 
             showLoading(config.name);
             updateHudUI(config);
+            setupProtostellarLights(sceneId);
 
             // Tier 1: Check Offline Base64 Payload
             const b64Data = (window.STELLAR_MODELS && window.STELLAR_MODELS[config.base64Key]) || window[config.base64Key];
@@ -1353,6 +1483,80 @@
 
         updateHudState();
 
+        // Pointer Interaction & Raycast Mesh Selection
+        let isDragging = false;
+        let startPointer = { x: 0, y: 0 };
+        let startTime = 0;
+
+        renderer.domElement.addEventListener('pointerdown', (e) => {
+            isDragging = false;
+            startPointer.x = e.clientX;
+            startPointer.y = e.clientY;
+            startTime = performance.now();
+        });
+
+        renderer.domElement.addEventListener('pointermove', (e) => {
+            const dist = Math.hypot(e.clientX - startPointer.x, e.clientY - startPointer.y);
+            if (dist > 6) {
+                isDragging = true;
+                hoverTag.style.display = 'none';
+            } else if (!isDragging && clickableMeshes.length > 0) {
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+                const hits = raycaster.intersectObjects(clickableMeshes, true);
+                if (hits.length > 0) {
+                    const meshName = hits[0].object.name || "Stellar Component";
+                    hoverTag.style.display = 'block';
+                    hoverTag.style.left = e.clientX + 'px';
+                    hoverTag.style.top = e.clientY + 'px';
+                    hoverTag.textContent = meshName.replace(/_/g, ' ');
+                    renderer.domElement.style.cursor = 'pointer';
+                } else {
+                    hoverTag.style.display = 'none';
+                    renderer.domElement.style.cursor = 'default';
+                }
+            }
+        });
+
+        renderer.domElement.addEventListener('pointerup', (e) => {
+            const dt = performance.now() - startTime;
+            const dist = Math.hypot(e.clientX - startPointer.x, e.clientY - startPointer.y);
+            if (!isDragging && dt < 350 && dist < 6) {
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+                const hits = raycaster.intersectObjects(clickableMeshes, true);
+                if (hits.length > 0) {
+                    const meshName = hits[0].object.name || "";
+                    const config = SCENE_CONFIGS[activeSceneId];
+                    if (config && config.features) {
+                        let matchedKey = null;
+                        if (activeSceneId === 'pillars_creation') {
+                            if (meshName.includes('Pillar_1')) matchedKey = "01_Main_Spire";
+                            else if (meshName.includes('Pillar_2')) matchedKey = "02_Center_Pillar";
+                            else if (meshName.includes('Pillar_3')) matchedKey = "03_Right_Finger";
+                            else matchedKey = "04_Protostar_Tips";
+                        } else if (activeSceneId === 'cartwheel_galaxy') {
+                            if (meshName.includes('Ring') || meshName.includes('Torus')) matchedKey = "01_Starburst_Ring";
+                            else if (meshName.includes('Core')) matchedKey = "02_Galactic_Core";
+                            else if (meshName.includes('Companion')) matchedKey = "04_Impactor_Galaxies";
+                            else matchedKey = "03_Radial_Spokes";
+                        } else if (activeSceneId === 'carina_cliffs') {
+                            matchedKey = "01_Ionization_Ridge";
+                        } else if (activeSceneId === 'cosmic_cylinder') {
+                            matchedKey = "01_Optical_Axis_Spine";
+                        }
+                        if (matchedKey) {
+                            selectFeature(matchedKey);
+                            focusCameraOnFeature(matchedKey);
+                        }
+                    }
+                }
+            }
+            isDragging = false;
+        });
+
         // Responsive Resize
         window.addEventListener('resize', onWindowResize, false);
         function onWindowResize() {
@@ -1370,6 +1574,15 @@
             if (mixer) {
                 mixer.update(delta);
             }
+
+            // Gentle pulsating glow on protostellar accretion nodes
+            const time = clock.getElapsedTime();
+            if (protostellarLights && protostellarLights.length > 0) {
+                protostellarLights.forEach((l, idx) => {
+                    l.intensity = 1.6 + 0.35 * Math.sin(time * 3.5 + idx * 1.5);
+                });
+            }
+
             controls.update();
             renderer.render(scene, camera);
         }
