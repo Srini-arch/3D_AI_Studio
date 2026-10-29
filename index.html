@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harmonic Cosmic Cylinder - 4D Spacetime Trumpet Inspector</title>
+    <title>3D AI Studio - High-Contrast Celestial Observational Engine</title>
     <style>
         :root {
-            --bg-dark: #030408;
-            --panel-bg: rgba(9, 14, 28, 0.85);
-            --panel-border: rgba(64, 160, 255, 0.3);
+            --bg-dark: #000000;
+            --panel-bg: rgba(6, 10, 20, 0.88);
+            --panel-border: rgba(64, 160, 255, 0.25);
             --accent-gold: #ffcd32;
-            --accent-cyan: #50d0ff;
-            --accent-amber: #ffa726;
+            --accent-cyan: #38bdf8;
+            --accent-amber: #f59e0b;
+            --accent-crimson: #f43f5e;
             --accent-purple: #c084fc;
             --text-main: #e2e8f0;
             --text-muted: #94a3b8;
@@ -35,22 +36,23 @@
             width: 100vw;
             height: 100vh;
             display: block;
+            background: #000000;
         }
 
         /* Loading Screen Overlay */
         #loading-screen {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: radial-gradient(circle at center, #0a1128 0%, #030408 85%);
+            background: #000000;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
+            transition: opacity 0.4s ease, visibility 0.4s;
         }
 
         #loading-screen.hidden {
@@ -60,15 +62,13 @@
         }
 
         .spinner {
-            width: 60px;
-            height: 60px;
-            border: 3px solid rgba(80, 208, 255, 0.15);
-            border-top: 3px solid var(--accent-gold);
-            border-right: 3px solid var(--accent-cyan);
+            width: 46px;
+            height: 46px;
+            border: 2px solid rgba(56, 189, 248, 0.15);
+            border-top: 2px solid var(--accent-gold);
             border-radius: 50%;
-            animation: spin 1.1s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
-            margin-bottom: 22px;
-            box-shadow: 0 0 25px rgba(255, 205, 50, 0.2);
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 18px;
         }
 
         @keyframes spin {
@@ -77,26 +77,26 @@
         }
 
         .loading-title {
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 2px;
+            font-size: 14px;
+            letter-spacing: 2.5px;
             text-transform: uppercase;
             color: var(--accent-gold);
             margin-bottom: 8px;
+            font-weight: 700;
         }
 
         .loading-status {
-            font-size: 12px;
-            color: var(--accent-cyan);
-            letter-spacing: 0.5px;
-            margin-bottom: 14px;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            font-family: monospace;
         }
 
         .progress-track {
             width: 240px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
             overflow: hidden;
         }
 
@@ -104,86 +104,64 @@
             width: 0%;
             height: 100%;
             background: linear-gradient(90deg, var(--accent-cyan), var(--accent-gold));
-            transition: width 0.3s ease;
+            transition: width 0.2s ease;
         }
 
-        /* Fallback Overlay (When CORS or Network Fails) */
-        #cors-fallback {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(3, 4, 8, 0.92);
-            backdrop-filter: blur(12px);
+        /* Top Center Stellar Scene Switcher */
+        #stellar-switcher {
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 150;
+            display: flex;
+            gap: 6px;
+            background: rgba(8, 12, 22, 0.90);
+            border: 1px solid rgba(255, 205, 50, 0.35);
+            border-radius: 30px;
+            padding: 4px 6px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9);
+            max-width: calc(100vw - 32px);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        #stellar-switcher::-webkit-scrollbar {
             display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            padding: 20px;
         }
 
-        .fallback-box {
-            background: var(--panel-bg);
-            border: 1px solid var(--accent-gold);
-            border-radius: 14px;
-            padding: 28px 36px;
-            max-width: 540px;
-            text-align: center;
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8);
-        }
-
-        .fallback-box h2 {
-            font-size: 18px;
-            color: var(--accent-gold);
-            margin: 0 0 10px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .fallback-box p {
-            font-size: 13px;
-            line-height: 1.6;
-            color: var(--text-main);
-            margin-bottom: 20px;
-        }
-
-        .drop-zone {
-            border: 2px dashed rgba(80, 208, 255, 0.5);
-            border-radius: 10px;
-            padding: 24px;
-            margin-bottom: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(15, 23, 42, 0.6);
-        }
-
-        .drop-zone:hover, .drop-zone.dragover {
-            border-color: var(--accent-gold);
-            background: rgba(255, 205, 50, 0.1);
-        }
-
-        .btn-browse {
-            display: inline-block;
-            background: linear-gradient(135deg, rgba(80, 208, 255, 0.3), rgba(30, 64, 175, 0.6));
-            border: 1px solid var(--accent-cyan);
-            border-radius: 6px;
-            padding: 10px 20px;
-            color: #ffffff;
-            font-size: 12px;
+        .scene-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #94a3b8;
+            font-size: 11.5px;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            padding: 6px 14px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.2s;
+            white-space: nowrap;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .btn-browse:hover {
-            box-shadow: 0 0 15px rgba(80, 208, 255, 0.5);
+        .scene-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
-        /* Top Left Spacetime Panel */
+        .scene-btn.active {
+            color: #030408;
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 16px rgba(255, 205, 50, 0.45);
+        }
+
+        /* Top Left HUD */
         #hud-main {
             position: absolute;
             top: 20px;
@@ -193,10 +171,9 @@
             border: 1px solid var(--panel-border);
             border-radius: 12px;
             padding: 18px 22px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
             width: 360px;
-            max-width: calc(100vw - 40px);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: default;
         }
@@ -208,8 +185,7 @@
             cursor: pointer;
         }
 
-        #hud-main.collapsed #hud-content,
-        #hud-main.collapsed .subtitle {
+        #hud-main.collapsed #hud-content {
             display: none !important;
         }
 
@@ -313,7 +289,7 @@
 
         #object-select {
             width: 100%;
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(15, 23, 42, 0.95);
             color: #ffffff;
             border: 1px solid rgba(64, 160, 255, 0.4);
             border-radius: 6px;
@@ -371,7 +347,7 @@
             border-radius: 12px;
             padding: 20px 24px;
             backdrop-filter: blur(14px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.75);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
             width: 380px;
             display: none;
             animation: fadeInRight 0.3s ease forwards;
@@ -385,53 +361,53 @@
         .inspector-badge {
             display: inline-block;
             font-size: 10px;
-            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin-bottom: 8px;
+            letter-spacing: 1.2px;
+            font-weight: 700;
             background: rgba(255, 205, 50, 0.18);
             color: var(--accent-gold);
             border: 1px solid rgba(255, 205, 50, 0.4);
+            border-radius: 4px;
+            padding: 3px 8px;
+            margin-bottom: 10px;
         }
 
         .inspector-title {
             font-size: 16px;
             font-weight: 700;
-            margin: 0 0 12px 0;
             color: #ffffff;
-            line-height: 1.3;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
         }
 
         .inspector-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 8px 14px;
             margin-bottom: 14px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 23, 42, 0.65);
+            padding: 10px 14px;
             border-radius: 8px;
-            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .grid-item-label {
             font-size: 10px;
-            text-transform: uppercase;
             color: var(--text-muted);
+            text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .grid-item-value {
             font-size: 12px;
             font-weight: 600;
-            color: #ffffff;
+            color: var(--accent-cyan);
             margin-top: 2px;
         }
 
         .inspector-desc {
             font-size: 12px;
-            line-height: 1.55;
+            line-height: 1.5;
             color: #cbd5e1;
             margin-bottom: 16px;
         }
@@ -443,56 +419,54 @@
 
         .btn-focus {
             flex: 1;
-            background: linear-gradient(135deg, rgba(64, 160, 255, 0.35), rgba(30, 64, 175, 0.6));
+            background: linear-gradient(135deg, rgba(64, 160, 255, 0.3), rgba(30, 64, 175, 0.5));
             border: 1px solid var(--accent-cyan);
-            border-radius: 6px;
-            padding: 8px 12px;
             color: #ffffff;
-            font-size: 11.5px;
+            font-size: 12px;
             font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 6px;
             cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
             transition: all 0.2s;
         }
 
         .btn-focus:hover {
-            background: linear-gradient(135deg, rgba(64, 160, 255, 0.55), rgba(30, 64, 175, 0.8));
-            box-shadow: 0 0 12px rgba(80, 208, 255, 0.4);
+            background: var(--accent-cyan);
+            color: #030408;
         }
 
         .btn-close {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            padding: 8px 14px;
             color: #94a3b8;
-            font-size: 11px;
+            font-size: 12px;
+            padding: 8px 14px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .btn-close:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
             color: #ffffff;
         }
 
-        /* Bottom Control Bar */
+        /* Bottom Controls */
         #bottom-bar {
             position: absolute;
-            bottom: 24px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
+            z-index: 100;
             background: var(--panel-bg);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            border: 1px solid var(--panel-border);
             border-radius: 30px;
-            padding: 8px 24px;
+            padding: 8px 20px;
             display: flex;
             align-items: center;
-            gap: 16px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-            z-index: 100;
+            gap: 14px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
         }
 
         .control-btn {
@@ -526,7 +500,6 @@
             color: var(--text-muted);
         }
 
-        /* Tooltip hover tag */
         #hover-tag {
             position: absolute;
             display: none;
@@ -545,6 +518,22 @@
 
         /* Responsive Mobile Styles */
         @media (max-width: 768px) {
+            #stellar-switcher {
+                top: auto;
+                bottom: 68px;
+                left: 12px;
+                right: 12px;
+                transform: none;
+                justify-content: flex-start;
+                padding: 4px 6px;
+                border-radius: 12px;
+            }
+
+            .scene-btn {
+                font-size: 10px;
+                padding: 4px 10px;
+            }
+
             #hud-main {
                 top: 12px;
                 left: 12px;
@@ -578,34 +567,9 @@
                 padding-bottom: 2px;
             }
 
-            .selector-box {
-                margin-top: 8px;
-                padding-top: 8px;
-            }
-
-            .selector-label {
-                font-size: 10.5px;
-                margin-bottom: 4px;
-            }
-
-            select#object-select {
-                font-size: 11px;
-                padding: 6px 10px;
-            }
-
-            .chip-container {
-                gap: 4px;
-                margin-top: 6px;
-            }
-
-            .chip-btn {
-                font-size: 10px;
-                padding: 3px 8px;
-            }
-
             #inspector-card {
                 top: auto;
-                bottom: 72px;
+                bottom: 118px;
                 left: 12px;
                 right: 12px;
                 width: auto;
@@ -645,109 +609,47 @@
     <!-- Loading Screen Overlay -->
     <div id="loading-screen">
         <div class="spinner"></div>
-        <div class="loading-title">Harmonic Cosmic Cylinder</div>
-        <div class="loading-status" id="loading-status">Initializing Spacetime Viewport...</div>
+        <div class="loading-title" id="loading-scene-name">Carina Cosmic Cliffs</div>
+        <div class="loading-status" id="loading-status">Reconstructing 3D Volumetric Continuum...</div>
         <div class="progress-track">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
     </div>
 
-    <!-- CORS / Local File Fallback Overlay -->
-    <div id="cors-fallback">
-        <div class="fallback-box">
-            <h2>Cosmic Model Not Found</h2>
-            <p>
-                When opening HTML files directly via <code>file:///</code>, browsers block local file loading for security (CORS).
-                <br><br>
-                <strong>You can either:</strong>
-                <br>
-                1. Select the <code>jwst_harmonic_cosmic_cylinder.glb</code> file below, or
-                <br>
-                2. Run <code>launch_cylinder_viewer.bat</code> in the project root to start the local server.
-            </p>
-            <div class="drop-zone" id="drop-zone">
-                <p style="margin: 0 0 10px 0; color: var(--accent-cyan); font-weight: 600;">
-                    Drag & Drop <code>jwst_harmonic_cosmic_cylinder.glb</code> here
-                </p>
-                <label class="btn-browse">
-                    Browse File
-                    <input type="file" id="file-input" accept=".glb,.gltf" style="display: none;">
-                </label>
-            </div>
-        </div>
+    <!-- Top Center Stellar Object Switcher -->
+    <div id="stellar-switcher">
+        <button class="scene-btn active" data-scene="carina_cliffs">✦ Carina Cliffs</button>
+        <button class="scene-btn" data-scene="pillars_creation">✦ Pillars of Creation</button>
+        <button class="scene-btn" data-scene="cartwheel_galaxy">✦ Cartwheel Galaxy</button>
+        <button class="scene-btn" data-scene="cosmic_cylinder">✦ Cosmic Cylinder</button>
     </div>
 
     <!-- Top Left HUD -->
     <div id="hud-main">
         <h1>
             <span style="display: flex; align-items: center; gap: 8px;">
-                <span>Harmonic Cosmic Cylinder</span>
+                <span id="hud-title">Carina Cosmic Cliffs</span>
                 <span style="font-size: 10px; color: var(--accent-cyan);">60 FPS</span>
             </span>
             <button id="btn-hud-toggle" class="btn-toggle-hud" aria-label="Toggle Panel" title="Collapse Panel">−</button>
         </h1>
-        <div class="collapsed-hint">🧭 Tap to Inspect Components & Telemetry ▾</div>
+        <div class="collapsed-hint">🧭 Tap to Inspect Stellar Features & Telemetry ▾</div>
         <div id="hud-content">
-            <div class="subtitle">4D FLRW Spacetime Trumpet Worldtube</div>
+            <div class="subtitle" id="hud-subtitle">NGC 3324 / Gum 31 Ionization Ridge & Star Nursery</div>
 
-            <div class="metric-row">
-                <span class="metric-label">Spacetime Blocks</span>
-                <span class="metric-val">4 Stages (Z: -80 to +190)</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Optical Spine</span>
-                <span class="metric-val">Cyan Relativistic Geodesic Beam</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Einstein Lens Gate</span>
-                <span class="metric-val">Golden Ring R_E = 36 (z = 0.39)</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Circle of Fifths</span>
-                <span class="metric-val">12 Ribs (Consonant & Tritone)</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Galactic Geometry</span>
-                <span class="metric-val">Volumetric Cross-Quad (No Clones)</span>
-            </div>
-            <div class="metric-row">
-                <span class="metric-label">Harmonic Pulse</span>
-                <span class="metric-val" id="time-val" style="color: var(--accent-gold);">0.00 s / 12.00 s</span>
+            <div id="metrics-container">
+                <!-- Dynamically populated per scene -->
             </div>
 
-            <!-- Object Navigator Dropdown -->
+            <!-- Feature Inspector Dropdown -->
             <div class="selector-box">
-                <label class="selector-label" for="object-select">Inspect Spacetime Component:</label>
+                <label class="selector-label" for="object-select">Inspect Stellar Feature:</label>
                 <select id="object-select">
-                    <option value="">-- Click on 3D Object or Select Below --</option>
-                    <optgroup label="Stage 1: Observer & Optical Spine">
-                        <option value="01_Optical_Axis_Spine">01. Optical Axis Spine</option>
-                        <option value="02_Observer_Gate_JWST">02. Observer Gate (JWST)</option>
-                    </optgroup>
-                    <optgroup label="Stage 2: SMACS 0723 Lens & Cluster">
-                        <option value="03_Einstein_Lens_Ring">03. Einstein Lens Ring</option>
-                        <option value="04_Central_Monster_Galaxy">04. Central Monster BCG Galaxy</option>
-                        <option value="06_Lensed_Einstein_Arc">06. Lensed Einstein Arc Ribbon</option>
-                        <option value="07_Cluster_Galaxies_Zone">07. Cluster Galaxies Zone (90 Galaxies)</option>
-                    </optgroup>
-                    <optgroup label="Stage 3: Deep Field & Starburst">
-                        <option value="08_Cosmic_Noon_Ring">08. Cosmic Noon Epoch Ring</option>
-                        <option value="09_Starburst_Spiral_Galaxy">09. Starburst Spiral Galaxy</option>
-                        <option value="10_Deep_Field_Galaxies">10. Deep Field Galaxies (80 Primordial)</option>
-                        <option value="11_The_Sparkler_z6">11. The Sparkler Protogalaxy (z ~ 6)</option>
-                    </optgroup>
-                    <optgroup label="Stage 4: Cosmic Horizon & Harmonics">
-                        <option value="12_Big_Bang_Horizon_Ring">12. Big Bang Horizon Ring (Thin Ring)</option>
-                        <option value="13_Harmonic_Lattice_Spines">13. Minimal Skeletal Ribs (12 Hairline Spines)</option>
-                    </optgroup>
+                    <!-- Dynamically populated -->
                 </select>
 
-                <div class="chip-container">
-                    <button class="chip-btn" data-key="03_Einstein_Lens_Ring">Lens Ring</button>
-                    <button class="chip-btn" data-key="06_Lensed_Einstein_Arc">Einstein Arc</button>
-                    <button class="chip-btn" data-key="04_Central_Monster_Galaxy">BCG Galaxy</button>
-                    <button class="chip-btn" data-key="11_The_Sparkler_z6">Sparkler z=6</button>
-                    <button class="chip-btn" data-key="12_Big_Bang_Horizon_Ring">Big Bang Ring</button>
+                <div class="chip-container" id="chip-container">
+                    <!-- Dynamically populated -->
                 </div>
             </div>
         </div>
@@ -755,249 +657,381 @@
 
     <!-- Right Side Component Inspector Card -->
     <div id="inspector-card">
-        <div class="inspector-badge" id="card-badge">Stage 2: Gravitational Lens</div>
-        <div class="inspector-title" id="card-title">03. Einstein Lens Ring</div>
+        <div class="inspector-badge" id="card-badge">Astrophysical Feature</div>
+        <div class="inspector-title" id="card-title">Feature Title</div>
         
         <div class="inspector-grid">
             <div>
-                <div class="grid-item-label">Lookback Time</div>
-                <div class="grid-item-value" id="card-lookback">4.6 Gyr</div>
+                <div class="grid-item-label" id="card-lbl1">Distance / Lookback</div>
+                <div class="grid-item-value" id="card-val1">--</div>
             </div>
             <div>
-                <div class="grid-item-label">Redshift</div>
-                <div class="grid-item-value" id="card-redshift">z = 0.39</div>
+                <div class="grid-item-label" id="card-lbl2">Redshift / Velocity</div>
+                <div class="grid-item-value" id="card-val2">--</div>
             </div>
             <div>
-                <div class="grid-item-label">Spacetime Z</div>
-                <div class="grid-item-value" id="card-z">Z = 0.0</div>
+                <div class="grid-item-label" id="card-lbl3">Physical Span</div>
+                <div class="grid-item-value" id="card-val3">--</div>
             </div>
             <div>
-                <div class="grid-item-label">Metric Mode</div>
-                <div class="grid-item-value" id="card-metric">Deflection Gate</div>
+                <div class="grid-item-label" id="card-lbl4">Temperature / Band</div>
+                <div class="grid-item-value" id="card-val4">--</div>
             </div>
         </div>
 
         <div class="inspector-desc" id="card-desc">
-            Deflection gate description goes here...
+            Scientific astrophysical description...
         </div>
 
         <div class="inspector-actions">
-            <button class="btn-focus" id="btn-focus-cam">Focus Camera</button>
+            <button class="btn-focus" id="btn-focus-cam">Focus 3D Camera</button>
             <button class="btn-close" id="btn-close-card">Close</button>
         </div>
     </div>
 
     <!-- Bottom Playback & View Bar -->
     <div id="bottom-bar">
-        <button class="control-btn" id="btn-play-pause">
-            <span id="play-icon">&#10074;&#10074;</span> Pause
-        </button>
+        <button class="control-btn" id="btn-reset-view">&#8635; Center Perspective</button>
         <div class="control-divider"></div>
-        <button class="control-btn" id="btn-speed">1.0x Speed</button>
-        <div class="control-divider"></div>
-        <button class="control-btn" id="btn-reset-view">&#8635; Full Worldtube View</button>
-        <div class="control-divider"></div>
-        <span class="hint-text">Click any 3D object to inspect astrophysics</span>
+        <span class="hint-text" id="status-hint">High-Contrast Celestial Observational Engine ✦ Orbit with drag / touch</span>
     </div>
 
-    <div id="hover-tag">Object Tag</div>
+    <div id="hover-tag">Stellar Object</div>
     <div id="canvas-container"></div>
 
     <script>
-        // Scientific Registry
-        const OBJECT_REGISTRY = {
-            "01_Optical_Axis_Spine": {
-                title: "01. Optical Axis Line-of-Sight Spine",
-                category: "Stage 1: Observer & Optical Spine",
-                zPos: "Z = -80 to +190",
-                lookback: "0.0 to 13.5 Gyr",
-                redshift: "z = 0.0 to 15.0+",
-                metric: "Null Geodesic Line",
-                color: "#50d0ff",
-                description: "The primary relativistic line-of-sight axis aligning the JWST observer aperture at Sun-Earth L2 directly through the BCG mass core of SMACS J0723 and back to the edge of the observable universe.",
-                camPos: [85, 45, 55],
-                targetPos: [0, 0, 55]
+        // Multi-Scene Configuration Dictionary
+        const SCENE_CONFIGS = {
+            carina_cliffs: {
+                id: "carina_cliffs",
+                name: "Carina Cosmic Cliffs",
+                subtitle: "NGC 3324 / Gum 31 Ionization Ridge & Star Nursery",
+                base64Key: "CARINA_CLIFFS_BASE64",
+                glbFile: "carina_cosmic_cliffs_3d.glb",
+                camPos: [0, 15, 110],
+                camTarget: [0, 0, 0],
+                metrics: [
+                    { label: "Astrophysical Type", val: "Ionization Front & H II Nursery" },
+                    { label: "Distance", val: "7,600 Light-Years (Carina Arm)" },
+                    { label: "Cliff Wall Height", val: "7.2 Light-Years (~68 Trillion km)" },
+                    { label: "NIRCam Filter Bands", val: "F090W, F187N, F444W" },
+                    { label: "Supersonic Outflows", val: "45 km/s Herbig-Haro Jets" },
+                    { label: "Scientific Epoch", val: "Active Starbirth (Present Day)" }
+                ],
+                lbls: ["Distance", "Outflow Velocity", "Physical Height", "Ionization Temp"],
+                features: {
+                    "01_Photoevaporation_Ridge": {
+                        title: "01. Photoevaporation Wall Ridge",
+                        badge: "Ionization Boundary",
+                        val1: "7,600 Light-Years",
+                        val2: "Mach 4.5 Stellar Wind",
+                        val3: "7.2 Light-Years Wall",
+                        val4: "10,000 K (Ionized Plasma)",
+                        desc: "Massive towering wall of interstellar dust and cold molecular gas being carved away by fierce ultraviolet photoevaporation from young massive stars.",
+                        camPos: [0, 8, 65],
+                        targetPos: [0, -3, 8]
+                    },
+                    "02_Dust_Pillars": {
+                        title: "02. Sculpted Molecular Dust Pillars",
+                        badge: "Stellar Wind Sculpting",
+                        val1: "7,600 Light-Years",
+                        val2: "Erosion Front",
+                        val3: "1.5 - 3.0 Light-Years",
+                        val4: "30 - 80 Kelvin (Cold Dust)",
+                        desc: "Denser pockets of dust resisting stellar wind erosion, forming promontories pointing toward the ionizing stars, protecting new protostars.",
+                        camPos: [-25, -6, 55],
+                        targetPos: [-20, -10, 10]
+                    },
+                    "03_Protostellar_Jets": {
+                        title: "03. Supersonic Protostellar Outflows",
+                        badge: "Herbig-Haro Jets",
+                        val1: "7,600 Light-Years",
+                        val2: "45 km/s Jet Velocity",
+                        val3: "0.8 Light-Year Jet",
+                        val4: "2,000 K (Shocked H2)",
+                        desc: "Energetic bipolar outflows of molecular hydrogen (F187N emission at 1.87 μm) erupting from embedded protostars hidden within the dust.",
+                        camPos: [26, -4, 48],
+                        targetPos: [22, -8, 12]
+                    },
+                    "04_Infrared_Void": {
+                        title: "04. Deep-Space Infrared Cosmic Sky",
+                        badge: "Deep Stellar Field",
+                        val1: "Interstellar Space",
+                        val2: "Galactic Disk Field",
+                        val3: "Field of View: 15.3 Ly",
+                        val4: "2.73 K (CMB Void)",
+                        desc: "The pristine sapphire expanse of space behind the nebula, populated by thousands of background stars pierced by NIRCam's infrared vision.",
+                        camPos: [0, 35, 75],
+                        targetPos: [0, 22, -6]
+                    }
+                }
             },
-            "02_Observer_Gate_JWST": {
-                title: "02. Observer Gate (JWST Sun-Earth L2)",
-                category: "Stage 1: Observer & Optical Spine",
-                zPos: "Z = -80.0",
-                lookback: "0.0 Gyr (Present Day)",
-                redshift: "z = 0.00",
-                metric: "Entrance Pupil",
-                color: "#50e4ff",
-                description: "Observer entrance aperture at Z = -80 representing the James Webb Space Telescope stationed at the Second Sun-Earth Lagrange Point. Photons traveling for up to 13.5 billion years enter this aperture today.",
-                camPos: [45, 25, -60],
-                targetPos: [0, 0, -80]
+            pillars_creation: {
+                id: "pillars_creation",
+                name: "Pillars of Creation",
+                subtitle: "M16 Eagle Nebula Cold Molecular Hydrogen Monoliths",
+                base64Key: "PILLARS_CREATION_BASE64",
+                glbFile: "pillars_of_creation_3d.glb",
+                camPos: [0, 10, 105],
+                camTarget: [0, 5, 0],
+                metrics: [
+                    { label: "Astrophysical Type", val: "Interstellar Gas Columns & EGGs" },
+                    { label: "Distance", val: "6,500 Light-Years (Serpens)" },
+                    { label: "Main Spire Length", val: "4.5 Light-Years (~42 Trillion km)" },
+                    { label: "Total Gas Mass", val: "200 Solar Masses (M☉)" },
+                    { label: "Core Temperature", val: "15 Kelvin (-258°C)" },
+                    { label: "Instruments", val: "NIRCam & MIRI Composite" }
+                ],
+                lbls: ["Distance", "Gas Density", "Physical Height", "Core Temperature"],
+                features: {
+                    "01_Main_Spire": {
+                        title: "01. Monolith Pillar 1 (Tallest Spire)",
+                        badge: "Molecular Monolith",
+                        val1: "6,500 Light-Years",
+                        val2: "10^5 particles/cm³",
+                        val3: "4.5 Light-Years Height",
+                        val4: "15 Kelvin (-258°C)",
+                        desc: "The monumental left column stretching 4.5 light-years above the base. Contains dense molecular hydrogen and dark microscopic dust grains.",
+                        camPos: [-12, 16, 52],
+                        targetPos: [-8, 10, 12]
+                    },
+                    "02_Center_Pillar": {
+                        title: "02. Middle Pillar (Evaporating Globules)",
+                        badge: "EGG Nursery",
+                        val1: "6,500 Light-Years",
+                        val2: "Stellar Wind Ablation",
+                        val3: "3.2 Light-Years Height",
+                        val4: "18 Kelvin",
+                        desc: "The central column featuring evaporating gaseous globules (EGGs) at its crest, exposing collapsing protostellar cores to interstellar space.",
+                        camPos: [8, 8, 52],
+                        targetPos: [6, 4, 10]
+                    },
+                    "03_Right_Finger": {
+                        title: "03. Right Spire & Starburst Knots",
+                        badge: "Secondary Column",
+                        val1: "6,500 Light-Years",
+                        val2: "Ablation Shock",
+                        val3: "2.1 Light-Years Height",
+                        val4: "22 Kelvin",
+                        desc: "A shorter, sharply sculpted column facing the ionizing radiation from cluster NGC 6611, glowing with intense mid-infrared silhouette.",
+                        camPos: [20, -4, 48],
+                        targetPos: [16, -6, 8]
+                    },
+                    "04_Protostar_Tips": {
+                        title: "04. Crimson Newborn Protostar Tips",
+                        badge: "Protostellar Core",
+                        val1: "6,500 Light-Years",
+                        val2: "Supersonic Accretion",
+                        val3: "0.1 Light-Year Core",
+                        val4: "1,500 K (Accretion Disk)",
+                        desc: "Glowing crimson nodes at the tips of the columns: newly born protostars only a few hundred thousand years old ejecting energetic material.",
+                        camPos: [-8, 26, 38],
+                        targetPos: [-6, 20, 15]
+                    }
+                }
             },
-            "03_Einstein_Lens_Ring": {
-                title: "03. Einstein Lens Ring (Critical Radius)",
-                category: "Stage 2: SMACS 0723 Gravitational Lens",
-                zPos: "Z = 0.0",
-                lookback: "4.6 Gyr",
-                redshift: "z = 0.39",
-                metric: "R_E = 36 kpc",
-                color: "#ffd700",
-                description: "The critical Einstein Radius where gravitational spacetime curvature caused by the multi-trillion solar mass cluster deflects passing tangential geodesics by α = 4GM / (c²ξ).",
-                camPos: [65, 30, 20],
-                targetPos: [0, 0, 0]
+            cartwheel_galaxy: {
+                id: "cartwheel_galaxy",
+                name: "The Cartwheel Galaxy",
+                subtitle: "ESO 350-40 Relativistic Collision Ring Wave",
+                base64Key: "CARTWHEEL_GALAXY_BASE64",
+                glbFile: "cartwheel_galaxy_3d.glb",
+                camPos: [0, 42, 115],
+                camTarget: [0, 0, 0],
+                metrics: [
+                    { label: "Astrophysical Type", val: "Lenticular Collision Ring Galaxy" },
+                    { label: "Distance", val: "500 Million Light-Years (Sculptor)" },
+                    { label: "Outer Ring Diameter", val: "150,000 Light-Years (1.5x Milky Way)" },
+                    { label: "Shock Velocity", val: "217 km/s (Expanding Ring)" },
+                    { label: "Starburst Age", val: "400 Million Years Post-Impact" },
+                    { label: "Instruments", val: "NIRCam & MIRI Composite" }
+                ],
+                lbls: ["Distance", "Expansion Velocity", "Ring Diameter", "Shock Temperature"],
+                features: {
+                    "01_Starburst_Ring": {
+                        title: "01. Expanding Collision Shock Ring",
+                        badge: "Starburst Wavefront",
+                        val1: "500 Million Light-Years",
+                        val2: "217 km/s Expansion",
+                        val3: "150,000 Light-Years Outer",
+                        val4: "Millions of Kelvin (Gas)",
+                        desc: "A colossal cosmic ring wave plowing outward through gas and dust, triggering ferocious starburst activity and thousands of massive young stars.",
+                        camPos: [0, 22, 60],
+                        targetPos: [0, 0, 6]
+                    },
+                    "02_Galactic_Core": {
+                        title: "02. Brilliant Golden-Cyan Nucleus",
+                        badge: "Galactic Hub",
+                        val1: "500 Million Light-Years",
+                        val2: "z = 0.030",
+                        val3: "25,000 Light-Years Hub",
+                        val4: "4,000 - 6,000 K (Stellar)",
+                        desc: "The bright central nucleus containing dense older stellar populations that survived the high-speed bullet collision nearly intact.",
+                        camPos: [6, 4, 32],
+                        targetPos: [4, 1, 8]
+                    },
+                    "03_Radial_Spokes": {
+                        title: "03. Gravitational Dust Spokes",
+                        badge: "Connecting Filaments",
+                        val1: "500 Million Light-Years",
+                        val2: "Reforming Spiral Arms",
+                        val3: "60,000 Light-Years Spoke",
+                        val4: "50 - 150 Kelvin (Silicates)",
+                        desc: "Delicate radial filaments bridging the core and outer starburst ring, illuminated by MIRI infrared detection of silicate dust and hydrocarbons.",
+                        camPos: [-16, 10, 42],
+                        targetPos: [-10, 4, 3]
+                    },
+                    "04_Impactor_Galaxies": {
+                        title: "04. Companion Stripper Galaxies",
+                        badge: "Interacting Companions",
+                        val1: "500 Million Light-Years",
+                        val2: "Tidal Stripping",
+                        val3: "30,000 Light-Years Each",
+                        val4: "Stellar Temperatures",
+                        desc: "The companion galaxies to the left; one of them penetrated the Cartwheel's center head-on, launching the cosmic ripples we observe today.",
+                        camPos: [-36, 8, 42],
+                        targetPos: [-32, 4, 2]
+                    }
+                }
             },
-            "04_Central_Monster_Galaxy": {
-                title: "04. Central Monster BCG Galaxy",
-                category: "Stage 2: SMACS 0723 Gravitational Lens",
-                zPos: "Z = 0.0 (Cluster Core)",
-                lookback: "4.6 Gyr",
-                redshift: "z = 0.39",
-                metric: "de Vaucouleurs Halo",
-                color: "#fff2cc",
-                description: "The Brightest Cluster Galaxy (BCG) of SMACS J0723.3-7327. Contains hundreds of billions of solar masses in stars and an immense dark matter halo that anchors the primary gravitational lens potential.",
-                camPos: [24, 12, 12],
-                targetPos: [0, 0, 0]
-            },
-            "06_Lensed_Einstein_Arc": {
-                title: "06. Lensed Einstein Arc Ribbon",
-                category: "Stage 2: SMACS 0723 Gravitational Lens",
-                zPos: "Z = +65.0",
-                lookback: "9.2 Gyr",
-                redshift: "z = 1.40",
-                metric: "Magnification ~20x",
-                color: "#ff9800",
-                description: "Background source galaxy gravitationally magnified by ~20x and sheared into an iconic curved crescent banana arc. The 3D geometry is modeled as a curved spacetime ribbon mapped directly from real JWST NIRCam astrometry.",
-                camPos: [42, 28, 80],
-                targetPos: [22, 22, 65]
-            },
-            "07_Cluster_Galaxies_Zone": {
-                title: "07. Virialized Cluster Galaxies Zone",
-                category: "Stage 2: SMACS 0723 Gravitational Lens",
-                zPos: "Z = -16 to +16",
-                lookback: "4.4 to 4.8 Gyr",
-                redshift: "z ≈ 0.39",
-                metric: "90 Distinct Members",
-                color: "#ffe082",
-                description: "90 genuine, non-duplicate member galaxies bound inside the SMACS 0723 gravitational potential well. Foreground Milky Way stars have been eliminated via iterative Non-Maximum Suppression (NMS).",
-                camPos: [65, 35, 15],
-                targetPos: [0, 0, 0]
-            },
-            "08_Cosmic_Noon_Ring": {
-                title: "08. Cosmic Noon Epoch Ring",
-                category: "Stage 3: Deep Field & Cosmic Evolution",
-                zPos: "Z = +75.0",
-                lookback: "10.5 Gyr",
-                redshift: "z ≈ 2.0 to 2.5",
-                metric: "Peak Starburst",
-                color: "#d870e8",
-                description: "Luminous purple epoch ring marking 'Cosmic Noon': the era ~10 billion years ago when universal star formation and supermassive black hole accretion rates reached their all-time cosmic zenith.",
-                camPos: [80, 42, 90],
-                targetPos: [0, 0, 75]
-            },
-            "09_Starburst_Spiral_Galaxy": {
-                title: "09. Starburst Merger Spiral Galaxy",
-                category: "Stage 3: Deep Field & Cosmic Evolution",
-                zPos: "Z = +45.0 (-20, 16, 45)",
-                lookback: "7.8 Gyr",
-                redshift: "z ≈ 0.80",
-                metric: "Major Merger",
-                color: "#80d8ff",
-                description: "An active star-forming spiral merger displaying high ultraviolet luminosity and tidal arm distortion, illustrating rapid galactic structural transformation in intermediate cosmic epochs.",
-                camPos: [-5, 28, 55],
-                targetPos: [-20, 16, 45]
-            },
-            "10_Deep_Field_Galaxies": {
-                title: "10. Primordial Deep Field Galaxies",
-                category: "Stage 3: Deep Field & Cosmic Evolution",
-                zPos: "Z = +35 to +180",
-                lookback: "6.5 to 13.1 Gyr",
-                redshift: "z = 1.0 to 10.0",
-                metric: "80 SED Redshifted",
-                color: "#ff7043",
-                description: "80 primordial early-universe galaxies captured by JWST NIRCam deep exposures. Their ultraviolet rest-frame emissions have undergone extreme cosmological redshift into near-infrared amber and crimson hues.",
-                camPos: [95, 55, 115],
-                targetPos: [0, 0, 110]
-            },
-            "11_The_Sparkler_z6": {
-                title: "11. The Sparkler Protogalaxy (z ~ 6.1)",
-                category: "Stage 3: Deep Field & Cosmic Evolution",
-                zPos: "Z = +160.0 (32, -40, 160)",
-                lookback: "13.0 Gyr",
-                redshift: "z = 6.10",
-                metric: "Globular Clusters",
-                color: "#ff5252",
-                description: "The celebrated 'Sparkler' galaxy hosting compact globular star clusters formed in the reionization era just 700 million years after the Big Bang, discovered in JWST's First Deep Field.",
-                camPos: [48, -25, 172],
-                targetPos: [32, -40, 160]
-            },
-            "12_Big_Bang_Horizon_Ring": {
-                title: "12. Big Bang Horizon Boundary Ring (Thin Ring)",
-                category: "Stage 4: Cosmic Horizon & Harmonics",
-                zPos: "Z = +190.0",
-                lookback: "13.8 Gyr",
-                redshift: "z → 1100 (CMB)",
-                metric: "Event Horizon Ring",
-                color: "#ff6e40",
-                description: "Slender boundary ring indicating the Cosmic Microwave Background (CMB) recombination era where primordial plasma cooled into neutral hydrogen 380,000 years after the Big Bang (zero solid orange dome).",
-                camPos: [110, 65, 215],
-                targetPos: [0, 0, 190]
-            },
-            "13_Harmonic_Lattice_Spines": {
-                title: "13. Minimal Skeletal Ribs (12 Circle of 5ths Spines)",
-                category: "Stage 4: Cosmic Horizon & Harmonics",
-                zPos: "Full Cylinder (-80 to +190)",
-                lookback: "Full Cosmic Timeline",
-                redshift: "Universal Worldtube",
-                metric: "12 Hairline Spines",
-                color: "#ffe082",
-                description: "12 slender longitudinal hairline rails tracing the FLRW trumpet expansion curve without obscuring interior galaxies. Consonant ribs form clean geometric rails; tritone ribs exhibit subtle relativistic flutter.",
-                camPos: [210, 95, 55],
-                targetPos: [0, 0, 55]
+            cosmic_cylinder: {
+                id: "cosmic_cylinder",
+                name: "Harmonic Cosmic Cylinder",
+                subtitle: "4D FLRW Spacetime Trumpet Worldtube",
+                base64Key: "CYLINDER_MODEL_BASE64",
+                glbFile: "jwst_harmonic_cosmic_cylinder.glb",
+                camPos: [240, 110, 45],
+                camTarget: [0, 0, 55],
+                metrics: [
+                    { label: "Spacetime Blocks", val: "4 Stages (Z: -80 to +190)" },
+                    { label: "Optical Spine", val: "Cyan Relativistic Geodesic Beam" },
+                    { label: "Einstein Lens Gate", val: "Golden Ring R_E = 36 (z = 0.39)" },
+                    { label: "Circle of Fifths", val: "12 Ribs (Consonant & Tritone)" },
+                    { label: "Galactic Geometry", val: "Volumetric Cross-Quad (No Clones)" },
+                    { label: "Harmonic Pulse", val: "0.00 s / 12.00 s" }
+                ],
+                lbls: ["Lookback Time", "Redshift", "Spacetime Z", "Deflection Metric"],
+                features: {
+                    "01_Optical_Axis_Spine": {
+                        title: "01. Optical Axis Spine",
+                        badge: "Stage 1: Optical Spine",
+                        val1: "0 to 13.5 Gyr",
+                        val2: "z: 0.0 → 8.5+",
+                        val3: "270 Spacetime Units",
+                        val4: "Null Geodesic Line",
+                        desc: "The primary relativistic line-of-sight axis aligning the JWST observer aperture directly through the cluster core to the cosmic dawn.",
+                        camPos: [85, 45, 55],
+                        targetPos: [0, 0, 55]
+                    },
+                    "03_Einstein_Lens_Ring": {
+                        title: "03. Einstein Lens Ring",
+                        badge: "Stage 2: Gravitational Lens",
+                        val1: "4.6 Gyr",
+                        val2: "z = 0.39",
+                        val3: "R_E = 36 kpc",
+                        val4: "Deflection Gate",
+                        desc: "Critical Einstein radius where gravitational spacetime curvature deflects passing light rays by alpha = 4GM / (c^2 xi).",
+                        camPos: [65, 30, 20],
+                        targetPos: [0, 0, 0]
+                    },
+                    "04_Central_Monster_Galaxy": {
+                        title: "04. Central Monster BCG Galaxy",
+                        badge: "Stage 2: Cluster Deflector",
+                        val1: "4.6 Gyr",
+                        val2: "z = 0.39",
+                        val3: "300,000 Light-Years Halo",
+                        val4: "Massive Dark Halo",
+                        desc: "The Brightest Cluster Galaxy (BCG) of SMACS J0723 anchoring the immense gravitational lens potential well.",
+                        camPos: [24, 12, 12],
+                        targetPos: [0, 0, 0]
+                    },
+                    "06_Lensed_Einstein_Arc": {
+                        title: "06. Lensed Einstein Arc Ribbon",
+                        badge: "Stage 2: Gravitational Mirror",
+                        val1: "9.2 Gyr",
+                        val2: "z = 1.38",
+                        val3: "Magnified 12x",
+                        val4: "Spacetime Ribbon",
+                        desc: "Background source galaxy gravitationally magnified by 12x and sheared into an iconic curved crescent banana arc.",
+                        camPos: [42, 28, 80],
+                        targetPos: [22, 22, 65]
+                    },
+                    "11_The_Sparkler_z6": {
+                        title: "11. The Sparkler Protogalaxy (z ~ 6.1)",
+                        badge: "Stage 3: Primordial Galaxy",
+                        val1: "13.1 Billion Years",
+                        val2: "z = 6.10",
+                        val3: "Compact Protogalaxy",
+                        val4: "12 Globular Clusters",
+                        desc: "The celebrated Sparkler galaxy hosting compact globular star clusters formed in the reionization era just 700 Myr after the Big Bang.",
+                        camPos: [48, -25, 172],
+                        targetPos: [32, -40, 160]
+                    },
+                    "12_Big_Bang_Horizon_Ring": {
+                        title: "12. Big Bang Horizon Boundary Ring",
+                        badge: "Stage 4: Cosmic Horizon",
+                        val1: "13.8 Billion Years",
+                        val2: "z → 1100 (CMB)",
+                        val3: "Horizon Perimeter",
+                        val4: "CMB Recombination",
+                        desc: "Slender boundary ring indicating the Cosmic Microwave Background recombination era where primordial plasma cooled into neutral hydrogen.",
+                        camPos: [110, 65, 215],
+                        targetPos: [0, 0, 190]
+                    }
+                }
             }
         };
 
-        // Loading Screen Helpers
+        // Loading Overlay Controllers
         const loadingScreen = document.getElementById('loading-screen');
+        const loadingSceneName = document.getElementById('loading-scene-name');
         const loadingStatus = document.getElementById('loading-status');
         const progressBar = document.getElementById('progress-bar');
-        const corsFallback = document.getElementById('cors-fallback');
 
-        function updateLoading(msg, pct) {
-            if (loadingStatus) loadingStatus.textContent = msg;
-            if (progressBar && pct !== undefined) progressBar.style.width = pct + '%';
+        function updateLoading(status, pct) {
+            if (loadingStatus) loadingStatus.textContent = status;
+            if (progressBar) progressBar.style.width = pct + '%';
+        }
+
+        function showLoading(name) {
+            if (loadingSceneName) loadingSceneName.textContent = name;
+            updateLoading("Loading Celestial 3D Continuum...", 20);
+            loadingScreen.classList.remove('hidden');
         }
 
         function hideLoading() {
-            if (loadingScreen) loadingScreen.classList.add('hidden');
+            updateLoading("Complete!", 100);
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+            }, 300);
         }
 
-        function showCorsFallback() {
-            hideLoading();
-            if (corsFallback) corsFallback.style.display = 'flex';
-        }
-
-        // Three.js Scene Setup
+        // Three.js Scene Setup (High-Contrast Pure Dark Space)
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x020306);
-        scene.fog = new THREE.FogExp2(0x020306, 0.0012);
+        scene.background = new THREE.Color(0x000000); // Pure pitch-black cosmic space
+        scene.fog = new THREE.FogExp2(0x000000, 0.0008);
 
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2500);
-        camera.position.set(240, 110, 45);
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 3000);
+        camera.position.set(0, 15, 110);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.35;
+        renderer.toneMappingExposure = 1.45;
         container.appendChild(renderer.domElement);
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.target.set(0, 0, 55);
+        controls.target.set(0, 0, 0);
 
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.90);
+        // Lighting: Subtle ambient + dual directional for natural cosmic illumination
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
         scene.add(ambientLight);
 
-        const dirLight1 = new THREE.DirectionalLight(0xffecd2, 1.25);
+        const dirLight1 = new THREE.DirectionalLight(0xffecd2, 1.35);
         dirLight1.position.set(100, 150, 100);
         scene.add(dirLight1);
 
@@ -1005,38 +1039,105 @@
         dirLight2.position.set(-100, -50, -100);
         scene.add(dirLight2);
 
+        let gltfRoot = null;
         let mixer = null;
         let animAction = null;
-        let isPlaying = true;
-        let playbackSpeed = 1.0;
         const clock = new THREE.Clock();
-
-        let gltfRoot = null;
+        const loader = new THREE.GLTFLoader();
         const clickableMeshes = [];
 
         // Raycasting for Interactivity
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         const hoverTag = document.getElementById('hover-tag');
-        let selectedObjectKey = null;
+        let selectedFeatureKey = null;
+        let activeSceneId = "carina_cliffs";
 
-        const loader = new THREE.GLTFLoader();
+        // UI DOM Elements
+        const hudTitle = document.getElementById('hud-title');
+        const hudSubtitle = document.getElementById('hud-subtitle');
+        const metricsContainer = document.getElementById('metrics-container');
+        const objectSelect = document.getElementById('object-select');
+        const chipContainer = document.getElementById('chip-container');
 
-        // Model Initialization Callback
-        function onModelReady(gltf) {
-            updateLoading("Rendering Spacetime Trumpet...", 95);
-            if (gltfRoot) scene.remove(gltfRoot);
+        const inspectorCard = document.getElementById('inspector-card');
+        const cardBadge = document.getElementById('card-badge');
+        const cardTitle = document.getElementById('card-title');
+        const cardLbl1 = document.getElementById('card-lbl1');
+        const cardVal1 = document.getElementById('card-val1');
+        const cardLbl2 = document.getElementById('card-lbl2');
+        const cardVal2 = document.getElementById('card-val2');
+        const cardLbl3 = document.getElementById('card-lbl3');
+        const cardVal3 = document.getElementById('card-val3');
+        const cardLbl4 = document.getElementById('card-lbl4');
+        const cardVal4 = document.getElementById('card-val4');
+        const cardDesc = document.getElementById('card-desc');
+
+        // Populate HUD For Active Scene
+        function updateHudUI(sceneConfig) {
+            hudTitle.textContent = sceneConfig.name;
+            hudSubtitle.textContent = sceneConfig.subtitle;
+
+            // Populate Metrics
+            metricsContainer.innerHTML = '';
+            sceneConfig.metrics.forEach(m => {
+                const row = document.createElement('div');
+                row.className = 'metric-row';
+                row.innerHTML = `<span class="metric-label">${m.label}</span><span class="metric-val">${m.val}</span>`;
+                metricsContainer.appendChild(row);
+            });
+
+            // Populate Dropdown
+            objectSelect.innerHTML = '<option value="">-- Click on 3D Object or Select Below --</option>';
+            chipContainer.innerHTML = '';
+
+            for (const [key, feat] of Object.entries(sceneConfig.features)) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = feat.title;
+                objectSelect.appendChild(opt);
+
+                const chip = document.createElement('button');
+                chip.className = 'chip-btn';
+                chip.setAttribute('data-key', key);
+                chip.textContent = feat.badge;
+                chip.addEventListener('click', () => {
+                    selectFeature(key);
+                    focusCameraOnFeature(key);
+                    if (window.innerWidth <= 768) {
+                        isHudCollapsed = true;
+                        updateHudState();
+                    }
+                });
+                chipContainer.appendChild(chip);
+            }
+
+            inspectorCard.style.display = 'none';
+            selectedFeatureKey = null;
+        }
+
+        // Model Ready Callback
+        function onModelReady(gltf, sceneConfig) {
+            updateLoading("Rendering Stellar Geometry...", 90);
+            if (gltfRoot) {
+                scene.remove(gltfRoot);
+                gltfRoot.traverse(c => {
+                    if (c.geometry) c.geometry.dispose();
+                    if (c.material) {
+                        if (c.material.map) c.material.map.dispose();
+                        c.material.dispose();
+                    }
+                });
+            }
             clickableMeshes.length = 0;
-
             gltfRoot = gltf.scene;
             scene.add(gltfRoot);
 
-            gltfRoot.traverse(function (child) {
+            gltfRoot.traverse(child => {
                 if (child.isMesh) {
                     clickableMeshes.push(child);
                     if (child.material) {
                         child.material.side = THREE.DoubleSide;
-                        child.material.transparent = true;
                     }
                 }
             });
@@ -1045,181 +1146,112 @@
                 mixer = new THREE.AnimationMixer(gltfRoot);
                 animAction = mixer.clipAction(gltf.animations[0]);
                 animAction.play();
+            } else {
+                mixer = null;
+                animAction = null;
             }
 
-            console.log("Model successfully loaded! Clickable meshes:", clickableMeshes.length);
-            updateLoading("Ready!", 100);
-            setTimeout(hideLoading, 300);
-            corsFallback.style.display = 'none';
+            // Smooth camera transition to scene default
+            new TWEEN.Tween(camera.position)
+                .to({ x: sceneConfig.camPos[0], y: sceneConfig.camPos[1], z: sceneConfig.camPos[2] }, 1400)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            new TWEEN.Tween(controls.target)
+                .to({ x: sceneConfig.camTarget[0], y: sceneConfig.camTarget[1], z: sceneConfig.camTarget[2] }, 1400)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            hideLoading();
+            console.log(`[SCENE READY] ${sceneConfig.name} loaded with ${clickableMeshes.length} meshes.`);
         }
 
-        // Multi-tier Model Loading Strategy
-        function loadCosmicModel() {
-            // Tier 1: Embedded Base64 (100% offline, zero-CORS file:// protocol)
-            if (window.CYLINDER_MODEL_BASE64 && window.CYLINDER_MODEL_BASE64.length > 1000) {
-                updateLoading("Decoding Offline Spacetime Model...", 35);
+        // Scene Switcher Core Function
+        function switchScene(sceneId) {
+            if (!SCENE_CONFIGS[sceneId]) return;
+            activeSceneId = sceneId;
+            const config = SCENE_CONFIGS[sceneId];
+
+            // Update Switcher Active Button
+            document.querySelectorAll('.scene-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-scene') === sceneId);
+            });
+
+            showLoading(config.name);
+            updateHudUI(config);
+
+            // Tier 1: Check Offline Base64 Payload
+            const b64Data = (window.STELLAR_MODELS && window.STELLAR_MODELS[config.base64Key]) || window[config.base64Key];
+            if (b64Data && b64Data.length > 1000) {
+                updateLoading("Decoding Offline Stellar Model...", 40);
                 try {
-                    const binStr = atob(window.CYLINDER_MODEL_BASE64);
-                    const len = binStr.length;
-                    const bytes = new Uint8Array(len);
-                    for (let i = 0; i < len; i++) {
+                    const binStr = atob(b64Data);
+                    const bytes = new Uint8Array(binStr.length);
+                    for (let i = 0; i < binStr.length; i++) {
                         bytes[i] = binStr.charCodeAt(i);
                     }
-                    updateLoading("Parsing 4D Spacetime Hierarchy...", 70);
-                    loader.parse(bytes.buffer, '', onModelReady, function (err) {
-                        console.warn("Base64 parse error, trying network fetch:", err);
-                        tryNetworkFetch();
+                    updateLoading("Parsing 3D Volumetric Buffer...", 75);
+                    loader.parse(bytes.buffer, '', (gltf) => onModelReady(gltf, config), (err) => {
+                        console.warn("Base64 parse failed, falling back to file fetch:", err);
+                        loadFromFile(config);
                     });
                     return;
                 } catch (e) {
-                    console.warn("Base64 decode failed, trying network fetch:", e);
+                    console.warn("Base64 decode failed:", e);
                 }
             }
 
-            // Tier 2: Network Fetch (works on http://localhost:8089)
-            tryNetworkFetch();
+            // Tier 2: Fetch via Network/Relative File
+            loadFromFile(config);
         }
 
-        function tryNetworkFetch() {
-            updateLoading("Fetching jwst_minimal_accurate_cosmos.glb...", 40);
+        function loadFromFile(config) {
+            updateLoading(`Fetching ${config.glbFile}...`, 45);
             loader.load(
-                'recordings/jwst_minimal_accurate_cosmos.glb',
-                onModelReady,
-                function (xhr) {
+                config.glbFile,
+                (gltf) => onModelReady(gltf, config),
+                (xhr) => {
                     if (xhr.lengthComputable) {
                         const pct = Math.round((xhr.loaded / xhr.total) * 90);
-                        updateLoading(`Downloading Model: ${pct}%`, pct);
+                        updateLoading(`Downloading: ${pct}%`, pct);
                     }
                 },
-                function (err) {
-                    console.error("Network fetch failed (likely CORS on file:// or server offline):", err);
-                    showCorsFallback();
+                (err) => {
+                    console.error("Network fetch failed:", err);
+                    updateLoading("Error loading model", 100);
+                    setTimeout(hideLoading, 1000);
                 }
             );
         }
 
-        // Tier 3: Drag & Drop & Local File Picker Handlers
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('file-input');
-
-        window.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-        window.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
-        window.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                handleUserGlbFile(e.dataTransfer.files[0]);
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleUserGlbFile(e.target.files[0]);
-            }
-        });
-
-        function handleUserGlbFile(file) {
-            updateLoading("Reading dropped .glb file...", 50);
-            loadingScreen.classList.remove('hidden');
-            corsFallback.style.display = 'none';
-
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                const buffer = event.target.result;
-                updateLoading("Parsing 3D scene...", 80);
-                loader.parse(buffer, '', onModelReady, function (err) {
-                    alert("Error parsing GLB file: " + err.message);
-                    showCorsFallback();
-                });
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // Start loading
-        loadCosmicModel();
-
-        // Hierarchy key resolver
-        function findKeyFromObject(obj) {
-            let cur = obj;
-            while (cur && cur !== scene) {
-                if (cur.name) {
-                    for (let k in OBJECT_REGISTRY) {
-                        if (cur.name === k || cur.name === "Mesh_" + k || cur.name.includes(k)) {
-                            return k;
-                        }
-                    }
+        // Attach Switcher Event Listeners
+        document.querySelectorAll('.scene-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const s = this.getAttribute('data-scene');
+                if (s !== activeSceneId) {
+                    switchScene(s);
                 }
-                cur = cur.parent;
-            }
-            return null;
-        }
-
-        // Raycasting on Mouse Move
-        window.addEventListener('mousemove', function (e) {
-            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(clickableMeshes, true);
-
-            if (intersects.length > 0) {
-                const hitKey = findKeyFromObject(intersects[0].object);
-                if (hitKey && OBJECT_REGISTRY[hitKey]) {
-                    const data = OBJECT_REGISTRY[hitKey];
-                    hoverTag.textContent = data.title;
-                    hoverTag.style.left = e.clientX + 'px';
-                    hoverTag.style.top = e.clientY + 'px';
-                    hoverTag.style.display = 'block';
-                    container.style.cursor = 'pointer';
-                    return;
-                }
-            }
-            hoverTag.style.display = 'none';
-            container.style.cursor = 'default';
+            });
         });
 
-        // Click on 3D Object
-        window.addEventListener('click', function (e) {
-            if (e.target.closest('#hud-main') || e.target.closest('#inspector-card') || e.target.closest('#bottom-bar') || e.target.closest('#cors-fallback')) {
-                return;
-            }
-            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        // Feature Inspector Logic
+        function selectFeature(key) {
+            const config = SCENE_CONFIGS[activeSceneId];
+            if (!config || !config.features[key]) return;
+            selectedFeatureKey = key;
+            const feat = config.features[key];
 
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(clickableMeshes, true);
-
-            if (intersects.length > 0) {
-                const hitKey = findKeyFromObject(intersects[0].object);
-                if (hitKey) {
-                    selectComponent(hitKey);
-                }
-            }
-        });
-
-        // UI Card & Focus Logic
-        const inspectorCard = document.getElementById('inspector-card');
-        const cardBadge = document.getElementById('card-badge');
-        const cardTitle = document.getElementById('card-title');
-        const cardLookback = document.getElementById('card-lookback');
-        const cardRedshift = document.getElementById('card-redshift');
-        const cardZ = document.getElementById('card-z');
-        const cardMetric = document.getElementById('card-metric');
-        const cardDesc = document.getElementById('card-desc');
-        const objectSelect = document.getElementById('object-select');
-
-        function selectComponent(key) {
-            if (!OBJECT_REGISTRY[key]) return;
-            selectedObjectKey = key;
-            const data = OBJECT_REGISTRY[key];
-
-            cardBadge.textContent = data.category;
-            cardTitle.textContent = data.title;
-            cardLookback.textContent = data.lookback;
-            cardRedshift.textContent = data.redshift;
-            cardZ.textContent = data.zPos;
-            cardMetric.textContent = data.metric;
-            cardDesc.textContent = data.description;
+            cardBadge.textContent = feat.badge;
+            cardTitle.textContent = feat.title;
+            cardLbl1.textContent = config.lbls[0];
+            cardVal1.textContent = feat.val1;
+            cardLbl2.textContent = config.lbls[1];
+            cardVal2.textContent = feat.val2;
+            cardLbl3.textContent = config.lbls[2];
+            cardVal3.textContent = feat.val3;
+            cardLbl4.textContent = config.lbls[3];
+            cardVal4.textContent = feat.val4;
+            cardDesc.textContent = feat.desc;
 
             inspectorCard.style.display = 'block';
             objectSelect.value = key;
@@ -1229,35 +1261,65 @@
             });
         }
 
-        function focusCameraOn(key) {
-            const data = OBJECT_REGISTRY[key];
-            if (!data) return;
+        function focusCameraOnFeature(key) {
+            const config = SCENE_CONFIGS[activeSceneId];
+            if (!config || !config.features[key]) return;
+            const feat = config.features[key];
 
             new TWEEN.Tween(camera.position)
-                .to({ x: data.camPos[0], y: data.camPos[1], z: data.camPos[2] }, 1400)
+                .to({ x: feat.camPos[0], y: feat.camPos[1], z: feat.camPos[2] }, 1200)
                 .easing(TWEEN.Easing.Cubic.Out)
                 .start();
 
             new TWEEN.Tween(controls.target)
-                .to({ x: data.targetPos[0], y: data.targetPos[1], z: data.targetPos[2] }, 1400)
+                .to({ x: feat.targetPos[0], y: feat.targetPos[1], z: feat.targetPos[2] }, 1200)
                 .easing(TWEEN.Easing.Cubic.Out)
                 .start();
         }
 
-        document.getElementById('btn-focus-cam').addEventListener('click', function () {
-            if (selectedObjectKey) {
-                focusCameraOn(selectedObjectKey);
-            }
+        document.getElementById('btn-focus-cam').addEventListener('click', () => {
+            if (selectedFeatureKey) focusCameraOnFeature(selectedFeatureKey);
         });
 
-        document.getElementById('btn-close-card').addEventListener('click', function () {
+        document.getElementById('btn-close-card').addEventListener('click', () => {
             inspectorCard.style.display = 'none';
-            selectedObjectKey = null;
+            selectedFeatureKey = null;
             objectSelect.value = "";
             document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
         });
 
-        // Collapsible HUD Panel Logic (Responsive Mobile Optimization)
+        objectSelect.addEventListener('change', (e) => {
+            if (e.target.value) {
+                selectFeature(e.target.value);
+                focusCameraOnFeature(e.target.value);
+                if (window.innerWidth <= 768) {
+                    isHudCollapsed = true;
+                    updateHudState();
+                }
+            }
+        });
+
+        // Reset Perspective Button
+        document.getElementById('btn-reset-view').addEventListener('click', () => {
+            const config = SCENE_CONFIGS[activeSceneId];
+            if (!config) return;
+            inspectorCard.style.display = 'none';
+            selectedFeatureKey = null;
+            objectSelect.value = "";
+            document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+
+            new TWEEN.Tween(camera.position)
+                .to({ x: config.camPos[0], y: config.camPos[1], z: config.camPos[2] }, 1200)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            new TWEEN.Tween(controls.target)
+                .to({ x: config.camTarget[0], y: config.camTarget[1], z: config.camTarget[2] }, 1200)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+        });
+
+        // Collapsible HUD Panel Logic
         const hudMain = document.getElementById('hud-main');
         const btnHudToggle = document.getElementById('btn-hud-toggle');
         let isHudCollapsed = window.innerWidth <= 768;
@@ -1266,8 +1328,8 @@
             if (isHudCollapsed) {
                 hudMain.classList.add('collapsed');
                 btnHudToggle.textContent = '+';
-                btnHudToggle.title = 'Expand Components';
-                btnHudToggle.setAttribute('aria-label', 'Expand Components');
+                btnHudToggle.title = 'Expand Telemetry';
+                btnHudToggle.setAttribute('aria-label', 'Expand Telemetry');
             } else {
                 hudMain.classList.remove('collapsed');
                 btnHudToggle.textContent = '−';
@@ -1276,13 +1338,13 @@
             }
         }
 
-        btnHudToggle.addEventListener('click', function (e) {
+        btnHudToggle.addEventListener('click', (e) => {
             e.stopPropagation();
             isHudCollapsed = !isHudCollapsed;
             updateHudState();
         });
 
-        hudMain.addEventListener('click', function () {
+        hudMain.addEventListener('click', () => {
             if (isHudCollapsed) {
                 isHudCollapsed = false;
                 updateHudState();
@@ -1291,67 +1353,7 @@
 
         updateHudState();
 
-        objectSelect.addEventListener('change', function (e) {
-            if (e.target.value) {
-                selectComponent(e.target.value);
-                focusCameraOn(e.target.value);
-                if (window.innerWidth <= 768) {
-                    isHudCollapsed = true;
-                    updateHudState();
-                }
-            }
-        });
-
-        document.querySelectorAll('.chip-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const k = this.getAttribute('data-key');
-                selectComponent(k);
-                focusCameraOn(k);
-                if (window.innerWidth <= 768) {
-                    isHudCollapsed = true;
-                    updateHudState();
-                }
-            });
-        });
-
-        // Bottom Bar Controls
-        const btnPlayPause = document.getElementById('btn-play-pause');
-        const playIcon = document.getElementById('play-icon');
-        btnPlayPause.addEventListener('click', function () {
-            if (!animAction) return;
-            isPlaying = !isPlaying;
-            animAction.paused = !isPlaying;
-            playIcon.innerHTML = isPlaying ? '&#10074;&#10074;' : '&#9658;';
-            btnPlayPause.innerHTML = `<span id="play-icon">${playIcon.innerHTML}</span> ${isPlaying ? 'Pause' : 'Play'}`;
-        });
-
-        const btnSpeed = document.getElementById('btn-speed');
-        const speedOptions = [0.5, 1.0, 2.0];
-        let speedIdx = 1;
-        btnSpeed.addEventListener('click', function () {
-            speedIdx = (speedIdx + 1) % speedOptions.length;
-            playbackSpeed = speedOptions[speedIdx];
-            if (mixer) mixer.timeScale = playbackSpeed;
-            btnSpeed.textContent = `${playbackSpeed.toFixed(1)}x Speed`;
-        });
-
-        document.getElementById('btn-reset-view').addEventListener('click', function () {
-            inspectorCard.style.display = 'none';
-            selectedObjectKey = null;
-            objectSelect.value = "";
-            document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
-
-            new TWEEN.Tween(camera.position)
-                .to({ x: 240, y: 110, z: 45 }, 1200)
-                .easing(TWEEN.Easing.Cubic.Out)
-                .start();
-
-            new TWEEN.Tween(controls.target)
-                .to({ x: 0, y: 0, z: 55 }, 1200)
-                .easing(TWEEN.Easing.Cubic.Out)
-                .start();
-        });
-
+        // Responsive Resize
         window.addEventListener('resize', onWindowResize, false);
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -1359,22 +1361,22 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        const timeValElem = document.getElementById('time-val');
-
-        function animate(time) {
+        // Animation Loop (Locked 60 FPS)
+        function animate() {
             requestAnimationFrame(animate);
             TWEEN.update();
 
             const delta = clock.getDelta();
-            if (mixer && isPlaying) {
+            if (mixer) {
                 mixer.update(delta);
-                const animTime = mixer.time % 12.0;
-                timeValElem.textContent = `${animTime.toFixed(2)} s / 12.00 s`;
             }
             controls.update();
             renderer.render(scene, camera);
         }
         requestAnimationFrame(animate);
+
+        // Initialize First Scene (Carina Cosmic Cliffs - #1 MoE Champion)
+        switchScene("carina_cliffs");
     </script>
 </body>
 </html>
