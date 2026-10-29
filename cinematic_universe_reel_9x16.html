@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D AI Studio - Instagram Reel 9:16 Grand Cosmic Universe Recorder</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+        }
+        #viewport {
+            width: 1080px;
+            height: 1920px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+        }
+        #recorder-status {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 1000;
+            background: rgba(8, 12, 24, 0.92);
+            border: 1px solid #38bdf8;
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-family: monospace;
+            color: #ffcd32;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.85);
+        }
+    </style>
+    <!-- Offline Base64 Suite containing all models -->
+    <script src="model_data.js"></script>
+
+    <!-- Three.js + GLTFLoader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+    <div id="recorder-status">
+        [INITIALIZING] 3D Cosmic Universe Engine (1080x1920 9:16 Portrait)...
+    </div>
+    <canvas id="viewport" width="1080" height="1920"></canvas>
+
+    <script>
+        const statusElem = document.getElementById('recorder-status');
+        function setStatus(text) {
+            if (statusElem) statusElem.textContent = text;
+            console.log(text);
+        }
+
+        // Instagram Reel 9:16 Configuration
+        const WIDTH = 1080;
+        const HEIGHT = 1920;
+        const FPS = 30;
+        const DURATION = 50.0; // 50 seconds total continuous flight
+        const TOTAL_FRAMES = FPS * DURATION; // 1500 frames
+
+        const canvas = document.getElementById('viewport');
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            antialias: true,
+            alpha: false,
+            preserveDrawingBuffer: true
+        });
+        renderer.setSize(WIDTH, HEIGHT, false);
+        renderer.setPixelRatio(1);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.40;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000);
+
+        // 66° Vertical FOV in 9:16 portrait gives an optimal ~40.5° horizontal framing
+        const camera = new THREE.PerspectiveCamera(66, WIDTH / HEIGHT, 0.1, 4000);
+
+        // Natural cosmic directional + ambient lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.90);
+        scene.add(ambientLight);
+
+        const dirLight1 = new THREE.DirectionalLight(0xffecd2, 1.25);
+        dirLight1.position.set(200, 300, 200);
+        scene.add(dirLight1);
+
+        const dirLight2 = new THREE.DirectionalLight(0x70b0ff, 0.95);
+        dirLight2.position.set(-200, -100, -200);
+        scene.add(dirLight2);
+
+        // Composite 2D canvas for cinematic name cards & telemetry HUD
+        const compCanvas = document.createElement('canvas');
+        compCanvas.width = WIDTH;
+        compCanvas.height = HEIGHT;
+        const compCtx = compCanvas.getContext('2d');
+
+        // =====================================================================
+        // 1. VAST 3D PARALLAX STARFIELD (Spanning entire cosmic voyage)
+        // =====================================================================
+        function buildCosmicStarfield() {
+            const starCount = 3800;
+            const geo = new THREE.BufferGeometry();
+            const pos = new Float32Array(starCount * 3);
+            const col = new Float32Array(starCount * 3);
+            const sz = new Float32Array(starCount);
+
+            const starPal = [
+                new THREE.Color(0xffffff),
+                new THREE.Color(0xa5f3fc), // Cyan
+                new THREE.Color(0xfef08a), // Golden
+                new THREE.Color(0xfca5a5), // Crimson
+                new THREE.Color(0xe0e7ff)  // Diamond
+            ];
+
+            for (let i = 0; i < starCount; i++) {
+                // Distributed throughout flight volume: X in [-700, 700], Y in [-500, 500], Z in [+200, -1400]
+                pos[i * 3 + 0] = (Math.random() - 0.5) * 1400;
+                pos[i * 3 + 1] = (Math.random() - 0.5) * 1000;
+                pos[i * 3 + 2] = 200 - Math.random() * 1600;
+
+                const c = starPal[Math.floor(Math.random() * starPal.length)];
+                col[i * 3 + 0] = c.r;
+                col[i * 3 + 1] = c.g;
+                col[i * 3 + 2] = c.b;
+
+                sz[i] = 1.4 + Math.random() * 3.2;
+            }
+
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+            geo.setAttribute('size', new THREE.BufferAttribute(sz, 1));
+
+            // Circular glow star particle
+            const cCanvas = document.createElement('canvas');
+            cCanvas.width = 64; cCanvas.height = 64;
+            const cCtx = cCanvas.getContext('2d');
+            const g = cCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            g.addColorStop(0, 'rgba(255,255,255,1)');
+            g.addColorStop(0.2, 'rgba(255,255,255,0.85)');
+            g.addColorStop(0.5, 'rgba(180,220,255,0.25)');
+            g.addColorStop(1, 'rgba(0,0,0,0)');
+            cCtx.fillStyle = g;
+            cCtx.fillRect(0, 0, 64, 64);
+
+            const tex = new THREE.CanvasTexture(cCanvas);
+            const mat = new THREE.PointsMaterial({
+                size: 2.6,
+                vertexColors: true,
+                map: tex,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            scene.add(new THREE.Points(geo, mat));
+        }
+        buildCosmicStarfield();
+
+        // =====================================================================
+        // 2. CELESTIAL STATIONS (All 3 in the same vast 3D universe)
+        // =====================================================================
+        // Station 1: Carina Cosmic Cliffs at (0, 0, 0)
+        // Station 2: Pillars of Creation at (360, 60, -440)
+        // Station 3: The Cartwheel Galaxy at (-300, -80, -980)
+
+        const STATIONS = {
+            carina: {
+                center: new THREE.Vector3(0, 0, 0),
+                lookTarget: new THREE.Vector3(0, -2, 0),
+                radius: 88.0,
+                base64Key: "CARINA_CLIFFS_BASE64",
+                name: "CARINA COSMIC CLIFFS",
+                designation: "NGC 3324 · H II Photoevaporated Mountain Ridge",
+                distance: "7,600 LIGHT-YEARS",
+                location: "CARINA SPIRAL ARM",
+                scale: "7.2 LIGHT-YEAR TOWERING WALL",
+                instrument: "NASA / ESA / CSA · JWST NIRCam"
+            },
+            pillars: {
+                center: new THREE.Vector3(360, 60, -440),
+                lookTarget: new THREE.Vector3(360, 64, -440),
+                radius: 96.0,
+                base64Key: "PILLARS_CREATION_BASE64",
+                name: "PILLARS OF CREATION",
+                designation: "M16 Eagle Nebula · Molecular Hydrogen Monoliths",
+                distance: "6,500 LIGHT-YEARS",
+                location: "SERPENS CAUDA",
+                scale: "4.5 LIGHT-YEARS MAIN SPIRE",
+                instrument: "NIRCam & MIRI Multi-Band Composite"
+            },
+            cartwheel: {
+                center: new THREE.Vector3(-300, -80, -980),
+                lookTarget: new THREE.Vector3(-300, -80, -980),
+                radius: 94.0,
+                base64Key: "CARTWHEEL_GALAXY_BASE64",
+                name: "THE CARTWHEEL GALAXY",
+                designation: "ESO 350-40 · Relativistic Collision Ring Wave",
+                distance: "500 MILLION LIGHT-YEARS",
+                location: "SCULPTOR CONSTELLATION",
+                scale: "150,000 LY STARBURST RING",
+                instrument: "Shockwave Expansion: 217 km/s"
+            }
+        };
+
+        const protostellarLights = [];
+
+        function parseGlbBase64(base64Str, onDone) {
+            const binStr = atob(base64Str);
+            const bytes = new Uint8Array(binStr.length);
+            for (let i = 0; i < binStr.length; i++) {
+                bytes[i] = binStr.charCodeAt(i);
+            }
+            const loader = new THREE.GLTFLoader();
+            loader.parse(bytes.buffer, '', onDone, err => console.error("Parse failed:", err));
+        }
+
+        let loadedCount = 0;
+        function loadAllObjects(callback) {
+            // 1. Carina Cliffs
+            parseGlbBase64(window.STELLAR_MODELS[STATIONS.carina.base64Key] || window[STATIONS.carina.base64Key], gltf => {
+                const root = gltf.scene;
+                root.position.copy(STATIONS.carina.center);
+                scene.add(root);
+
+                const cLight1 = new THREE.PointLight(0xf59e0b, 2.2, 70);
+                cLight1.position.set(-22, -6, 22).add(STATIONS.carina.center);
+                scene.add(cLight1);
+                protostellarLights.push(cLight1);
+
+                const cLight2 = new THREE.PointLight(0x38bdf8, 2.0, 65);
+                cLight2.position.set(24, -8, 20).add(STATIONS.carina.center);
+                scene.add(cLight2);
+                protostellarLights.push(cLight2);
+
+                loadedCount++;
+                setStatus(`[LOADED 1/3] Carina Cosmic Cliffs in Universe...`);
+                if (loadedCount === 3) callback();
+            });
+
+            // 2. Pillars of Creation
+            parseGlbBase64(window.STELLAR_MODELS[STATIONS.pillars.base64Key] || window[STATIONS.pillars.base64Key], gltf => {
+                const root = gltf.scene;
+                root.position.copy(STATIONS.pillars.center);
+                // Rotate slightly to face the approaching cosmic flight path
+                root.rotation.y = math_rad(-18);
+                scene.add(root);
+
+                const pLight1 = new THREE.PointLight(0xff7043, 2.4, 60);
+                pLight1.position.set(13, 24, 20).add(STATIONS.pillars.center);
+                scene.add(pLight1);
+                protostellarLights.push(pLight1);
+
+                const pLight2 = new THREE.PointLight(0xff3d00, 2.2, 50);
+                pLight2.position.set(22, 12, 14).add(STATIONS.pillars.center);
+                scene.add(pLight2);
+                protostellarLights.push(pLight2);
+
+                loadedCount++;
+                setStatus(`[LOADED 2/3] Pillars of Creation in Universe...`);
+                if (loadedCount === 3) callback();
+            });
+
+            // 3. Cartwheel Galaxy
+            parseGlbBase64(window.STELLAR_MODELS[STATIONS.cartwheel.base64Key] || window[STATIONS.cartwheel.base64Key], gltf => {
+                const root = gltf.scene;
+                root.position.copy(STATIONS.cartwheel.center);
+                root.rotation.y = math_rad(15);
+                scene.add(root);
+
+                const cwLight1 = new THREE.PointLight(0xffc0cb, 2.6, 65);
+                cwLight1.position.set(10.8, -3.6, 12).add(STATIONS.cartwheel.center);
+                scene.add(cwLight1);
+                protostellarLights.push(cwLight1);
+
+                const cwLight2 = new THREE.PointLight(0x38bdf8, 2.0, 55);
+                cwLight2.position.set(24, 14, 8).add(STATIONS.cartwheel.center);
+                scene.add(cwLight2);
+                protostellarLights.push(cwLight2);
+
+                loadedCount++;
+                setStatus(`[LOADED 3/3] The Cartwheel Galaxy in Universe!`);
+                if (loadedCount === 3) callback();
+            });
+        }
+
+        function math_rad(deg) { return deg * Math.PI / 180.0; }
+
+        // Quintic Smoothstep for C2 continuous zero-jerk acceleration
+        function smoothQuintic(t) {
+            t = Math.max(0.0, Math.min(1.0, t));
+            return t * t * t * (t * (t * 6 - 15) + 10);
+        }
+
+        // =====================================================================
+        // 3. CONTINUOUS GRAND COSMIC CAMERA CHOREOGRAPHY (One unbroken flight)
+        // =====================================================================
+        // Total Duration = 50.0s.
+        // Segments:
+        //   0.0s -  3.0s: Carina Approach
+        //   3.0s - 12.0s: Carina 150° Side-to-Side Inspection Arc
+        //  12.0s - 14.0s: Carina Exit & Transition
+        //  14.0s - 18.5s: Warp Flight 1 (Carina -> Pillars)
+        //  18.5s - 21.0s: Pillars Approach & Deceleration
+        //  21.0s - 28.5s: Pillars 150° Side-to-Side Inspection Arc
+        //  28.5s - 30.5s: Pillars Exit & Transition
+        //  30.5s - 34.5s: Warp Flight 2 (Pillars -> Cartwheel)
+        //  34.5s - 37.0s: Cartwheel Approach & Alignment
+        //  37.0s - 45.0s: Cartwheel 150° Side-to-Side Inspection Arc
+        //  45.0s - 50.0s: Outro Cosmic Ascent & Void Fade
+
+        function computeCosmicTrajectory(t) {
+            const camPos = new THREE.Vector3();
+            const lookTarget = new THREE.Vector3();
+            let activeCard = null;
+            let cardOpacity = 0.0;
+
+            if (t < 14.0) {
+                // --- STATION 1: CARINA COSMIC CLIFFS ---
+                activeCard = STATIONS.carina;
+                const c = STATIONS.carina.center;
+                const r = STATIONS.carina.radius;
+
+                if (t < 3.0) {
+                    // Approach from starfield (Z = 140 down to 88)
+                    const p = smoothQuintic(t / 3.0);
+                    const theta = math_rad(-70 + p * 15);
+                    const currR = 140.0 - p * 52.0;
+                    camPos.set(c.x + currR * Math.sin(theta), c.y + 18.0 - p * 10.0, c.z + currR * Math.cos(theta));
+                    lookTarget.set(c.x, c.y - 2.0, c.z);
+                    cardOpacity = p;
+                } else if (t < 12.0) {
+                    // Panoramic 150° Sweep Arc (-55° to +55°)
+                    const p = (t - 3.0) / 9.0;
+                    const sinP = Math.sin(p * Math.PI); // Gentle height arc
+                    const theta = math_rad(-58 + p * 116); // 116° total frontal sweep
+                    camPos.set(
+                        c.x + r * Math.sin(theta),
+                        c.y + 8.0 + sinP * 12.0,
+                        c.z + r * Math.cos(theta)
+                    );
+                    lookTarget.set(c.x + Math.sin(theta) * 10.0, c.y - 2.0, c.z);
+                    cardOpacity = 1.0;
+                } else {
+                    // Smooth exit towards warp vector
+                    const p = (t - 12.0) / 2.0;
+                    const sp = smoothQuintic(p);
+                    const theta0 = math_rad(58);
+                    const startPos = new THREE.Vector3(c.x + r * Math.sin(theta0), c.y + 8.0, c.z + r * Math.cos(theta0));
+                    const nextVector = new THREE.Vector3(c.x + 80, c.y + 24, c.z - 50);
+                    camPos.lerpVectors(startPos, nextVector, sp);
+                    lookTarget.lerpVectors(new THREE.Vector3(c.x, c.y, c.z), STATIONS.pillars.center, sp * 0.4);
+                    cardOpacity = 1.0 - sp;
+                }
+
+            } else if (t < 18.5) {
+                // --- WARP FLIGHT 1: CARINA -> PILLARS ---
+                const p = (t - 14.0) / 4.5;
+                const sp = smoothQuintic(p);
+
+                // Curved high-speed spline through deep space
+                const p0 = new THREE.Vector3(80, 24, -50);
+                const p1 = new THREE.Vector3(220, 110, -220); // Mid-space apex
+                const p2 = new THREE.Vector3(STATIONS.pillars.center.x - 70, STATIONS.pillars.center.y + 30, STATIONS.pillars.center.z + 120);
+
+                // Quadratic Bezier for silky smooth curve
+                camPos.x = (1 - sp) * (1 - sp) * p0.x + 2 * (1 - sp) * sp * p1.x + sp * sp * p2.x;
+                camPos.y = (1 - sp) * (1 - sp) * p0.y + 2 * (1 - sp) * sp * p1.y + sp * sp * p2.y;
+                camPos.z = (1 - sp) * (1 - sp) * p0.z + 2 * (1 - sp) * sp * p1.z + sp * sp * p2.z;
+
+                // Look smoothly toward approaching Pillars
+                lookTarget.lerpVectors(new THREE.Vector3(200, 50, -200), STATIONS.pillars.lookTarget, sp);
+                cardOpacity = 0.0;
+
+            } else if (t < 30.5) {
+                // --- STATION 2: PILLARS OF CREATION ---
+                activeCard = STATIONS.pillars;
+                const c = STATIONS.pillars.center;
+                const r = STATIONS.pillars.radius;
+
+                if (t < 21.0) {
+                    // Approach & Deceleration
+                    const p = smoothQuintic((t - 18.5) / 2.5);
+                    const theta = math_rad(-62 + p * 12);
+                    const currR = 135.0 - p * 39.0;
+                    camPos.set(c.x + currR * Math.sin(theta), c.y + 35.0 - p * 10.0, c.z + currR * Math.cos(theta));
+                    lookTarget.set(c.x, c.y + 10.0, c.z);
+                    cardOpacity = p;
+                } else if (t < 28.5) {
+                    // Sweeping Inspection Arc (-50° to +55°)
+                    const p = (t - 21.0) / 7.5;
+                    const sinP = Math.sin(p * Math.PI);
+                    const theta = math_rad(-50 + p * 105);
+                    camPos.set(
+                        c.x + r * Math.sin(theta),
+                        c.y + 12.0 + sinP * 18.0, // Rises to inspect the giant spire crest
+                        c.z + r * Math.cos(theta)
+                    );
+                    lookTarget.set(c.x + Math.sin(theta) * 8.0, c.y + 8.0 + sinP * 6.0, c.z);
+                    cardOpacity = 1.0;
+                } else {
+                    // Exit towards Warp Flight 2
+                    const p = (t - 28.5) / 2.0;
+                    const sp = smoothQuintic(p);
+                    const theta0 = math_rad(55);
+                    const startPos = new THREE.Vector3(c.x + r * Math.sin(theta0), c.y + 12.0, c.z + r * Math.cos(theta0));
+                    const nextPos = new THREE.Vector3(c.x - 80, c.y + 20, c.z - 110);
+                    camPos.lerpVectors(startPos, nextPos, sp);
+                    lookTarget.lerpVectors(STATIONS.pillars.lookTarget, STATIONS.cartwheel.center, sp * 0.4);
+                    cardOpacity = 1.0 - sp;
+                }
+
+            } else if (t < 34.5) {
+                // --- WARP FLIGHT 2: PILLARS -> CARTWHEEL ---
+                const p = (t - 30.5) / 4.0;
+                const sp = smoothQuintic(p);
+
+                const p0 = new THREE.Vector3(STATIONS.pillars.center.x - 80, STATIONS.pillars.center.y + 20, STATIONS.pillars.center.z - 110);
+                const p1 = new THREE.Vector3(40, -10, -700); // Deep intergalactic transit node
+                const p2 = new THREE.Vector3(STATIONS.cartwheel.center.x + 90, STATIONS.cartwheel.center.y + 25, STATIONS.cartwheel.center.z + 120);
+
+                camPos.x = (1 - sp) * (1 - sp) * p0.x + 2 * (1 - sp) * sp * p1.x + sp * sp * p2.x;
+                camPos.y = (1 - sp) * (1 - sp) * p0.y + 2 * (1 - sp) * sp * p1.y + sp * sp * p2.y;
+                camPos.z = (1 - sp) * (1 - sp) * p0.z + 2 * (1 - sp) * sp * p1.z + sp * sp * p2.z;
+
+                lookTarget.lerpVectors(new THREE.Vector3(0, 0, -600), STATIONS.cartwheel.lookTarget, sp);
+                cardOpacity = 0.0;
+
+            } else if (t < 45.0) {
+                // --- STATION 3: THE CARTWHEEL GALAXY ---
+                activeCard = STATIONS.cartwheel;
+                const c = STATIONS.cartwheel.center;
+                const r = STATIONS.cartwheel.radius;
+
+                if (t < 37.0) {
+                    // Approach & Disk Alignment
+                    const p = smoothQuintic((t - 34.5) / 2.5);
+                    const theta = math_rad(58 - p * 12);
+                    const currR = 135.0 - p * 41.0;
+                    camPos.set(c.x + currR * Math.sin(theta), c.y + 25.0 - p * 12.0, c.z + currR * Math.cos(theta));
+                    lookTarget.set(c.x, c.y, c.z);
+                    cardOpacity = p;
+                } else {
+                    // 150° Inspection Arc around the Starburst Ring (+46° to -60°)
+                    const p = (t - 37.0) / 8.0;
+                    const sinP = Math.sin(p * Math.PI);
+                    const theta = math_rad(46 - p * 106);
+                    camPos.set(
+                        c.x + r * Math.sin(theta),
+                        c.y + 8.0 + sinP * 14.0,
+                        c.z + r * Math.cos(theta)
+                    );
+                    lookTarget.set(c.x + Math.sin(theta) * 6.0, c.y, c.z);
+                    cardOpacity = 1.0;
+                }
+
+            } else {
+                // --- OUTRO: COSMIC ASCENT & PANORAMIC FADE ---
+                activeCard = STATIONS.cartwheel;
+                const p = (t - 45.0) / 5.0;
+                const sp = smoothQuintic(p);
+                const c = STATIONS.cartwheel.center;
+                const theta0 = math_rad(-60);
+
+                const startPos = new THREE.Vector3(c.x + 94.0 * Math.sin(theta0), c.y + 8.0, c.z + 94.0 * Math.cos(theta0));
+                const endPos = new THREE.Vector3(c.x - 40, c.y + 110, c.z + 240); // Pulls way up and back
+
+                camPos.lerpVectors(startPos, endPos, sp);
+                lookTarget.set(c.x, c.y, c.z);
+                cardOpacity = Math.max(0.0, 1.0 - sp * 1.5);
+            }
+
+            return { cam: camPos, look: lookTarget, card: activeCard, opacity: cardOpacity };
+        }
+
+        // =====================================================================
+        // 4. DRAW CINEMATIC 9:16 INSTAGRAM REEL NAME CARD & HUD
+        // =====================================================================
+        function drawReelHUD(ctx, traj, curSec) {
+            if (!traj.card || traj.opacity <= 0.01) return;
+
+            const alpha = Math.min(1.0, Math.max(0.0, traj.opacity));
+            const card = traj.card;
+
+            ctx.save();
+
+            // 1. Top Cinematic Branding Badge (Y = 160)
+            const badgeW = 420;
+            const badgeH = 46;
+            const badgeX = (WIDTH - badgeW) / 2;
+            const badgeY = 160;
+
+            ctx.globalAlpha = alpha * 0.90;
+            ctx.fillStyle = "rgba(6, 10, 22, 0.78)";
+            ctx.strokeStyle = "rgba(255, 205, 50, 0.40)";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 23);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = "#ffcd32";
+            ctx.font = "bold 15px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("✦ DEEP SPACE 3D OBSERVATORY", WIDTH / 2, badgeY + badgeH / 2);
+
+            // 2. Lower-Third Glassmorphic Telemetry Card (Y = 1380 to 1660)
+            // Perfectly positioned above Instagram Reels caption/sound area
+            const cardW = 960;
+            const cardH = 260;
+            const cardX = (WIDTH - cardW) / 2;
+            const cardY = 1400;
+
+            ctx.globalAlpha = alpha * 0.92;
+            // Glassmorphic dark blue-black gradient
+            const grad = ctx.createLinearGradient(cardX, cardY, cardX, cardY + cardH);
+            grad.addColorStop(0, "rgba(8, 14, 28, 0.88)");
+            grad.addColorStop(1, "rgba(4, 7, 16, 0.94)");
+            ctx.fillStyle = grad;
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.35)";
+            ctx.lineWidth = 2.0;
+            ctx.beginPath();
+            ctx.roundRect(cardX, cardY, cardW, cardH, 24);
+            ctx.fill();
+            ctx.stroke();
+
+            // Accent Top Border Glow Line
+            ctx.strokeStyle = "rgba(255, 205, 50, 0.75)";
+            ctx.lineWidth = 3.0;
+            ctx.beginPath();
+            ctx.moveTo(cardX + 40, cardY);
+            ctx.lineTo(cardX + cardW - 40, cardY);
+            ctx.stroke();
+
+            ctx.globalAlpha = alpha;
+            ctx.textAlign = "left";
+
+            // Title
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 38px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            ctx.fillText(card.name, cardX + 36, cardY + 58);
+
+            // Subtitle
+            ctx.fillStyle = "#38bdf8";
+            ctx.font = "600 20px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            ctx.fillText(card.designation, cardX + 36, cardY + 98);
+
+            // Divider Line
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+            ctx.lineWidth = 1.0;
+            ctx.beginPath();
+            ctx.moveTo(cardX + 36, cardY + 124);
+            ctx.lineTo(cardX + cardW - 36, cardY + 124);
+            ctx.stroke();
+
+            // 4-Column Telemetry Grid
+            const colW = (cardW - 72) / 4;
+            const labels = ["LOOKBACK DISTANCE", "ASTRONOMICAL REGION", "PHYSICAL SCALE", "DETECTION INSTRUMENT"];
+            const values = [card.distance, card.location, card.scale, card.instrument];
+
+            for (let i = 0; i < 4; i++) {
+                const cx = cardX + 36 + i * colW;
+                ctx.fillStyle = "#94a3b8";
+                ctx.font = "bold 11px -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace";
+                ctx.fillText(labels[i], cx, cardY + 158);
+
+                ctx.fillStyle = i === 0 ? "#ffcd32" : (i === 1 ? "#e2e8f0" : (i === 2 ? "#38bdf8" : "#fca5a5"));
+                ctx.font = "bold 15px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+                
+                // Wrap value text if too wide for col
+                const valText = values[i];
+                if (valText.length > 22) {
+                    ctx.font = "bold 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+                }
+                ctx.fillText(valText, cx, cardY + 188);
+            }
+
+            // Cinematic Letterbox Vignette / Progress Indicator
+            const progressW = (curSec / DURATION) * cardW;
+            ctx.fillStyle = "rgba(56, 189, 248, 0.70)";
+            ctx.fillRect(cardX, cardY + cardH - 4, progressW, 4);
+
+            ctx.restore();
+        }
+
+        // =====================================================================
+        // 5. FRAME-BY-FRAME SYNCHRONOUS RECORDING LOOP
+        // =====================================================================
+        async function runRecordingPipeline() {
+            setStatus("[RECORDER] Notifying Python server on port 8098...");
+
+            try {
+                await fetch('http://localhost:8098/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ width: WIDTH, height: HEIGHT, fps: FPS, totalFrames: TOTAL_FRAMES })
+                });
+            } catch (e) {
+                setStatus("[RECORDER ERROR] Python receiver not running on port 8098: " + e.message);
+                return;
+            }
+
+            setStatus(`[RECORDER] Rendering ${TOTAL_FRAMES} frames @ 9:16 (1080x1920) 30 FPS...`);
+            const startTime = performance.now();
+
+            for (let frameIdx = 0; frameIdx < TOTAL_FRAMES; frameIdx++) {
+                const curSec = (frameIdx / TOTAL_FRAMES) * DURATION;
+
+                // 1. Calculate Continuous Flight Trajectory
+                const traj = computeCosmicTrajectory(curSec);
+                camera.position.copy(traj.cam);
+                camera.lookAt(traj.look);
+
+                // 2. Pulse Protostellar Lights
+                protostellarLights.forEach((l, idx) => {
+                    l.intensity = 1.8 + 0.45 * Math.sin(curSec * 3.8 + idx * 1.6);
+                });
+
+                // 3. Render WebGL Scene
+                renderer.render(scene, camera);
+
+                // 4. Composite Lower-Third HUD on 2D canvas
+                compCtx.drawImage(canvas, 0, 0);
+                drawReelHUD(compCtx, traj, curSec);
+
+                // 5. Convert to Blob & POST to Python receiver
+                const blob = await new Promise(resolve => compCanvas.toBlob(resolve, 'image/jpeg', 0.94));
+                const arrayBuffer = await blob.arrayBuffer();
+
+                await fetch(`http://localhost:8098/frame?index=${frameIdx}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/octet-stream' },
+                    body: arrayBuffer
+                });
+
+                if (frameIdx % 30 === 0 || frameIdx === TOTAL_FRAMES - 1) {
+                    const pct = Math.round((frameIdx / TOTAL_FRAMES) * 100);
+                    const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+                    setStatus(`[RECORDER] Frame ${frameIdx}/${TOTAL_FRAMES} (${pct}%) | ${elapsed}s elapsed`);
+                }
+            }
+
+            // Signal completion to Python
+            await fetch('http://localhost:8098/done', { method: 'POST' });
+            setStatus(`[RECORDER COMPLETE] All ${TOTAL_FRAMES} frames rendered and compiled!`);
+        }
+
+        // Start when all 3 models are loaded
+        loadAllObjects(() => {
+            setStatus("[READY] All 3 Objects In Space! Starting Recording in 1s...");
+            setTimeout(runRecordingPipeline, 1000);
+        });
+    </script>
+</body>
+</html>
