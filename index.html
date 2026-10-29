@@ -772,8 +772,8 @@
                 subtitle: "M16 Eagle Nebula Cold Molecular Hydrogen Monoliths",
                 base64Key: "PILLARS_CREATION_BASE64",
                 glbFile: "pillars_of_creation_3d.glb",
-                camPos: [0, 10, 105],
-                camTarget: [0, 5, 0],
+                camPos: [0, 4, 125],
+                camTarget: [0, 2, 0],
                 metrics: [
                     { label: "Astrophysical Type", val: "Interstellar Gas Columns & EGGs" },
                     { label: "Distance", val: "6,500 Light-Years (Serpens)" },
@@ -792,8 +792,8 @@
                         val3: "4.5 Light-Years Height",
                         val4: "15 Kelvin (-258°C)",
                         desc: "The monumental left column stretching 4.5 light-years above the base. Contains dense molecular hydrogen and dark microscopic dust grains.",
-                        camPos: [-12, 16, 52],
-                        targetPos: [-8, 10, 12]
+                        camPos: [14, 25, 48],
+                        targetPos: [13, 22, 12]
                     },
                     "02_Center_Pillar": {
                         title: "02. Middle Pillar (Evaporating Globules)",
@@ -803,8 +803,8 @@
                         val3: "3.2 Light-Years Height",
                         val4: "18 Kelvin",
                         desc: "The central column featuring evaporating gaseous globules (EGGs) at its crest, exposing collapsing protostellar cores to interstellar space.",
-                        camPos: [8, 8, 52],
-                        targetPos: [6, 4, 10]
+                        camPos: [22, 12, 38],
+                        targetPos: [20, 11, 4]
                     },
                     "03_Right_Finger": {
                         title: "03. Right Spire & Starburst Knots",
@@ -814,8 +814,8 @@
                         val3: "2.1 Light-Years Height",
                         val4: "22 Kelvin",
                         desc: "A shorter, sharply sculpted column facing the ionizing radiation from cluster NGC 6611, glowing with intense mid-infrared silhouette.",
-                        camPos: [20, -4, 48],
-                        targetPos: [16, -6, 8]
+                        camPos: [24, 0, 32],
+                        targetPos: [22, 0, -2]
                     },
                     "04_Protostar_Tips": {
                         title: "04. Crimson Newborn Protostar Tips",
@@ -825,8 +825,8 @@
                         val3: "0.1 Light-Year Core",
                         val4: "1,500 K (Accretion Disk)",
                         desc: "Glowing crimson nodes at the tips of the columns: newly born protostars only a few hundred thousand years old ejecting energetic material.",
-                        camPos: [-8, 26, 38],
-                        targetPos: [-6, 20, 15]
+                        camPos: [26, 21, 32],
+                        targetPos: [25, 20, 5]
                     }
                 }
             },
@@ -836,7 +836,7 @@
                 subtitle: "ESO 350-40 Relativistic Collision Ring Wave",
                 base64Key: "CARTWHEEL_GALAXY_BASE64",
                 glbFile: "cartwheel_galaxy_3d.glb",
-                camPos: [0, 42, 115],
+                camPos: [0, 15, 110],
                 camTarget: [0, 0, 0],
                 metrics: [
                     { label: "Astrophysical Type", val: "Lenticular Collision Ring Galaxy" },
@@ -856,8 +856,8 @@
                         val3: "150,000 Light-Years Outer",
                         val4: "Millions of Kelvin (Gas)",
                         desc: "A colossal cosmic ring wave plowing outward through gas and dust, triggering ferocious starburst activity and thousands of massive young stars.",
-                        camPos: [0, 22, 60],
-                        targetPos: [0, 0, 6]
+                        camPos: [12, 10, 68],
+                        targetPos: [10.8, -3.6, 2]
                     },
                     "02_Galactic_Core": {
                         title: "02. Brilliant Golden-Cyan Nucleus",
@@ -867,8 +867,8 @@
                         val3: "25,000 Light-Years Hub",
                         val4: "4,000 - 6,000 K (Stellar)",
                         desc: "The bright central nucleus containing dense older stellar populations that survived the high-speed bullet collision nearly intact.",
-                        camPos: [6, 4, 32],
-                        targetPos: [4, 1, 8]
+                        camPos: [11, -2, 38],
+                        targetPos: [10.8, -3.6, 6]
                     },
                     "03_Radial_Spokes": {
                         title: "03. Gravitational Dust Spokes",
@@ -878,8 +878,8 @@
                         val3: "60,000 Light-Years Spoke",
                         val4: "50 - 150 Kelvin (Silicates)",
                         desc: "Delicate radial filaments bridging the core and outer starburst ring, illuminated by MIRI infrared detection of silicate dust and hydrocarbons.",
-                        camPos: [-16, 10, 42],
-                        targetPos: [-10, 4, 3]
+                        camPos: [-2, 14, 48],
+                        targetPos: [0, 2, 2]
                     },
                     "04_Impactor_Galaxies": {
                         title: "04. Companion Stripper Galaxies",
@@ -889,8 +889,8 @@
                         val3: "30,000 Light-Years Each",
                         val4: "Stellar Temperatures",
                         desc: "The companion galaxies to the left; one of them penetrated the Cartwheel's center head-on, launching the cosmic ripples we observe today.",
-                        camPos: [-36, 8, 42],
-                        targetPos: [-32, 4, 2]
+                        camPos: [-28, 12, 45],
+                        targetPos: [-27, 10, 0]
                     }
                 }
             },
@@ -1024,7 +1024,9 @@
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
+        controls.dampingFactor = 0.06;
+        controls.minPolarAngle = Math.PI * 0.20;
+        controls.maxPolarAngle = Math.PI * 0.80;
         controls.target.set(0, 0, 0);
 
         // Lighting: Subtle ambient + dual directional for natural cosmic illumination
@@ -1126,35 +1128,40 @@
         function setupProtostellarLights(sceneId) {
             clearProtostellarLights();
             if (sceneId === 'pillars_creation') {
-                const p1 = new THREE.PointLight(0xff5722, 2.0, 50);
-                p1.position.set(-8, 24, 22);
+                const p1 = new THREE.PointLight(0xff7043, 2.2, 55);
+                p1.position.set(13, 24, 20);
                 scene.add(p1);
                 protostellarLights.push(p1);
 
-                const p2 = new THREE.PointLight(0xffb74d, 1.6, 40);
-                p2.position.set(6, 8, 10);
+                const p2 = new THREE.PointLight(0xff3d00, 2.0, 45);
+                p2.position.set(22, 12, 14);
                 scene.add(p2);
                 protostellarLights.push(p2);
 
-                const p3 = new THREE.PointLight(0xef4444, 1.4, 35);
-                p3.position.set(18, -4, -6);
+                const p3 = new THREE.PointLight(0xffb74d, 1.8, 50);
+                p3.position.set(-12, -18, 16);
                 scene.add(p3);
                 protostellarLights.push(p3);
             } else if (sceneId === 'cartwheel_galaxy') {
-                const coreL = new THREE.PointLight(0x38bdf8, 2.4, 60);
-                coreL.position.set(0, 0, 6);
+                const coreL = new THREE.PointLight(0xffc0cb, 2.4, 60);
+                coreL.position.set(10.8, -3.6, 12);
                 scene.add(coreL);
                 protostellarLights.push(coreL);
 
-                const ringL1 = new THREE.PointLight(0xf43f5e, 1.8, 45);
-                ringL1.position.set(30, 10, 10);
+                const ringL1 = new THREE.PointLight(0x38bdf8, 1.8, 50);
+                ringL1.position.set(24, 14, 8);
                 scene.add(ringL1);
                 protostellarLights.push(ringL1);
 
-                const ringL2 = new THREE.PointLight(0xfbbf24, 1.5, 40);
-                ringL2.position.set(-24, -16, -6);
+                const ringL2 = new THREE.PointLight(0xf43f5e, 1.8, 50);
+                ringL2.position.set(-4, -20, 8);
                 scene.add(ringL2);
                 protostellarLights.push(ringL2);
+
+                const compL = new THREE.PointLight(0xfbbf24, 1.5, 40);
+                compL.position.set(-26, 12, 6);
+                scene.add(compL);
+                protostellarLights.push(compL);
             } else if (sceneId === 'carina_cliffs') {
                 const cL1 = new THREE.PointLight(0xf59e0b, 2.0, 65);
                 cL1.position.set(-22, -6, 22);
